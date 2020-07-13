@@ -1,0 +1,51 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Manager</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let project of projectList">
+          <td>{{ project.name }}</td>
+          <td>{{ project.description }}</td>
+          <td>{{ project.manager?.firstName }} {{ project.manager?.lastName || "None" }}</td>
+          <td>
+            <button type="button" (click)="onInfoButtonClicked(project)" class="btn btn-sm btn-primary mr-1">
+              <fa-icon [icon]="infoIcon"></fa-icon>&nbsp;Info
+            </button>
+            <button type="button" (click)="onEditButtonClicked(project)" class="btn btn-sm btn-primary mr-1">
+              <fa-icon [icon]="pencilIcon"></fa-icon>&nbsp;Edit
+            </button>
+            <button type="button" (click)="onDeleteButtonClicked(project)" class="btn btn-sm btn-primary mr-1">
+              <fa-icon [icon]="trashIcon"></fa-icon>&nbsp;Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div bsModal #infoModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-info" role="document">
+    <div class="modal-content" *ngIf="this.currentSelectedProject">
+      <div class="modal-header">
+        <h4 class="modal-title">{{ this.currentSelectedProject.name}}</h4>
+        <button type="button" class="close" (click)="infoModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>{{ this.currentSelectedProject.description }}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="infoModal.hide()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

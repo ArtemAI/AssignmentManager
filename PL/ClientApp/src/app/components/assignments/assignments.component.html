@@ -1,0 +1,135 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Completed</th>
+          <th>Priority</th>
+          <th>Assigned to</th>
+          <th>Deadline</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let assignment of assignmentList">
+          <td>{{ assignment.name }}</td>
+          <td [ngSwitch]="assignment.status">
+            <span *ngSwitchCase="0">To do</span>
+            <span *ngSwitchCase="1">In progress</span>
+            <span *ngSwitchCase="2">Done</span>
+          </td>
+          <td>
+            <progressbar class="progress progress-striped" [value]="assignment.completionPercent" [max]="100"
+              type="success">
+              {{ assignment.completionPercent }}%</progressbar>
+          </td>
+          <td [ngSwitch]="assignment.priority">
+            <span *ngSwitchCase="0">Low</span>
+            <span *ngSwitchCase="1">Medium</span>
+            <span *ngSwitchCase="2">High</span>
+            <span *ngSwitchCase="3">Very high</span>
+          </td>
+          <td>{{ assignment.assignee.firstName }} {{ assignment.assignee.lastName }}</td>
+          <td>{{ assignment.deadline | date:'mediumDate'}}</td>
+          <td>
+            <button type="button" (click)="onInfoButtonClicked(assignment)" class="btn btn-sm btn-primary mr-1">
+              <fa-icon [icon]="infoIcon"></fa-icon>&nbsp;Info
+            </button>
+            <button type="button" (click)="onEditButtonClicked(assignment)" class="btn btn-sm btn-primary mr-1">
+              <fa-icon [icon]="pencilIcon"></fa-icon>&nbsp;Edit
+            </button>
+            <button type="button" (click)="onDeleteButtonClicked(assignment)" class="btn btn-sm btn-primary mr-1">
+              <fa-icon [icon]="trashIcon"></fa-icon>&nbsp;Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <button type="button" (click)="onCreateButtonClicked()" class="btn btn-sm btn-success">New assignment</button>
+  </div>
+</div>
+<div bsModal #createModal="bs-modal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-info" role="document">
+    <div class="modal-content">
+      <form [formGroup]="assignmentForm" (ngSubmit)="onSubmit(assignmentForm.value)">
+        <div class="modal-body">
+          <div class="alert alert-danger" *ngIf="this.errorMessage">
+            {{ errorMessage }}
+          </div>
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" formControlName="name">
+          </div>
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea class="form-control" formControlName="description" rows="3"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="priority">Priority</label>
+              <select class="form-control" formControlName="priority">
+                <option value="0">Low</option>
+                <option value="1">Medium</option>
+                <option value="2">High</option>
+                <option value="3">Very high</option>
+              </select>
+            </div>
+            <div class="form-group col">
+              <label for="deadline">Deadline</label>
+              <input type="text" class="form-control" formControlName="deadline" bsDatepicker
+                [bsConfig]="{ adaptivePosition: true }">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="status">Status</label>
+              <select class="form-control" formControlName="status">
+                <option value="0">To do</option>
+                <option value="1">In progress</option>
+                <option value="2">Done</option>
+              </select>
+            </div>
+            <div class="form-group col">
+              <label for="completionPercent">Completion Percent</label>
+              <input type="number" class="form-control" formControlName="completionPercent">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="projectId">Project</label>
+              <input type="text" class="form-control" formControlName="projectId">
+            </div>
+            <div class="form-group col">
+              <label for="assigneeId">Assignee</label>
+              <input type="text" class="form-control" formControlName="assigneeId">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" [disabled]="!assignmentForm.valid">Submit</button>
+          <button type="button" class="btn btn-secondary" (click)="createModal.hide()">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div bsModal #infoModal="bs-modal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-info" role="document">
+    <div class="modal-content" *ngIf="this.currentSelectedAssignment">
+      <div class="modal-header">
+        <h4 class="modal-title">{{ this.currentSelectedAssignment.name}}</h4>
+        <button type="button" class="close" (click)="infoModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>{{ this.currentSelectedAssignment.description }}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="infoModal.hide()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

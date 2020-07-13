@@ -1,0 +1,29 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>First name</th>
+          <th>Last name</th>
+          <th>Notifications</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of userList">
+          <td>{{ user.firstName }}</td>
+          <td>{{ user.lastName }}</td>
+          <td [ngSwitch]="user.allowEmailNotifications">
+            <span *ngSwitchCase="false">Allowed</span>
+            <span *ngSwitchCase="true">Not allowed</span>
+          </td>
+          <td>
+            <button type="button" (click)="onManageButtonClicked(user)" class="btn btn-sm btn-primary">
+              <fa-icon [icon]="pencilIcon"></fa-icon>&nbsp;Manage
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
