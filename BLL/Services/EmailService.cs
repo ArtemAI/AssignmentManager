@@ -4,6 +4,7 @@ using MailKit.Net.Smtp;
 using MimeKit;
 using MimeKit.Text;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BLL.Services
 {
@@ -19,27 +20,22 @@ namespace BLL.Services
             _emailConfiguration = emailConfiguration;
         }
 
-		public void Send(EmailMessage emailMessage)
+		public async Task Send(EmailMessage emailMessage)
         {
             var message = new MimeMessage();
             message.To.AddRange(emailMessage.ToAddresses.Select(x => new MailboxAddress(x.Name, x.Address)));
-            message.From.AddRange(emailMessage.FromAddresses.Select(x => new MailboxAddress(x.Name, x.Address)));
-
+            message.From.Add(new MailboxAddress(_emailConfiguration.SenderName, _emailConfiguration.SmtpUsername));
             message.Subject = emailMessage.Subject;
-
-            message.Body = new TextPart(TextFormat.Html)
+            message.Body = new TextPart(TextFormat.Plain)
             {
                 Text = emailMessage.Content
             };
 
-            using (var emailClient = new SmtpClient())
-            {
-                emailClient.Connect(_emailConfiguration.SmtpServer, _emailConfiguration.SmtpPort, true);
-                emailClient.AuthenticationMechanisms.Remove("XOAUTH2");
-                emailClient.Authenticate(_emailConfiguration.SmtpUsername, _emailConfiguration.SmtpPassword);
-                emailClient.Send(message);
-                emailClient.Disconnect(true);
-            }
+            using var emailClient = new SmtpClient();
+            await emailClient.ConnectAsync(_emailConfiguration.SmtpServer, _emailConfiguration.SmtpPort, true);
+            await emailClient.AuthenticateAsync(_emailConfiguration.SmtpUsername, _emailConfiguration.SmtpPassword);
+            await emailClient.SendAsync(message);
+            await emailClient.DisconnectAsync(true);
         }
 	}
 }

@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Extensions
 {
+    /// <summary>
+    /// Performs database seeding with test data.
+    /// </summary>
     static class ModelBuilderExtensions
     {
         public static void Seed(this ModelBuilder modelBuilder)

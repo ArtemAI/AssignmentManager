@@ -35,6 +35,7 @@ namespace PL.Controllers
             {
                 return Ok(await _userProfileService.GetAllUsersAsync());
             }
+
             var currentUserId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var currentUser = await _userProfileService.GetUserByIdAsync(currentUserId);
 
@@ -50,7 +51,6 @@ namespace PL.Controllers
         public async Task<ActionResult<UserProfileDto>> GetUserByIdAsync(Guid userId)
         {
             UserProfileDto user = await _userProfileService.GetUserByIdAsync(userId);
-
             if (user == null)
             {
                 return NotFound();
@@ -70,13 +70,13 @@ namespace PL.Controllers
         public async Task<ActionResult> UpdateUserAsync(Guid userId, [FromBody] UserProfileDto user)
         {
             UserProfileDto existingUser = await _userProfileService.GetUserByIdAsync(userId);
-
             if (existingUser == null)
             {
                 return NotFound();
             }
 
             await _userProfileService.UpdateUserAsync(user);
+
             return NoContent();
         }
 
@@ -84,13 +84,13 @@ namespace PL.Controllers
         public async Task<ActionResult> SetUserRole(Guid userId, string role)
         {
             UserProfileDto existingUser = await _userProfileService.GetUserByIdAsync(userId);
-
             if (existingUser == null)
             {
                 return NotFound();
             }
 
             await _userProfileService.SetUserRole(userId, role);
+
             return NoContent();
         }
     }

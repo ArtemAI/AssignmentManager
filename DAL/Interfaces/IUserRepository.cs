@@ -7,12 +7,11 @@ namespace DAL.Interfaces
 {
     public interface IUserRepository
     {
-        UserProfile Add(UserProfile item);
-        void Update(UserProfile item);
-        void Remove(UserProfile item);
+        UserProfile AddUserProfile(UserProfile item);
+        void UpdateUserProfile(UserProfile item);
 
-        Task<UserProfile> GetByIdAsync(Guid userProfileId);
-        Task<IEnumerable<UserProfile>> GetByProjectIdAsync(Guid projectId);
-        Task<IEnumerable<UserProfile>> GetAllAsync();
+        Task<UserProfile> GetUserProfileByIdAsync(Guid userProfileId);
+        Task<IEnumerable<UserProfile>> GetUserProfileByProjectIdAsync(Guid projectId);
+        Task<IEnumerable<UserProfile>> GetAllUserProfilesAsync();
     }
 }

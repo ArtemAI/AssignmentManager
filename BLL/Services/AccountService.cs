@@ -70,7 +70,9 @@ namespace BLL.Services
                 var registeredUser = await _userManager.FindByNameAsync(user.UserName);
                 await _userManager.AddToRoleAsync(registeredUser, "Employee");
                 await _signInManager.SignInAsync(registeredUser, false);
-                _unitOfWork.UserProfiles.Add(userProfile);
+
+                userProfile.Id = registeredUser.Id;
+                _unitOfWork.UserProfiles.AddUserProfile(userProfile);
                 await _unitOfWork.SaveAsync();
                 return registeredUser;
             }

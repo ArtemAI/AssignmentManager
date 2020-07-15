@@ -22,30 +22,30 @@ namespace DAL.Repositories
             _dbSet = context.Assignments;
         }
 
-        public Assignment Add(Assignment item)
+        public Assignment AddAssignment(Assignment item)
         {
             _dbSet.Add(item);
             return item;
         }
 
-        public void Update(Assignment item)
+        public void UpdateAssignment(Assignment item)
         {
             _dbContext.Entry(item).State = EntityState.Modified;
         }
 
-        public void Remove(Assignment item)
+        public void RemoveAssignment(Assignment item)
         {
             _dbSet.Remove(item);
         }
 
-        public async Task<Assignment> GetByIdAsync(Guid assignmentId)
+        public async Task<Assignment> GetAssignmentByIdAsync(Guid assignmentId)
         {
             return await _dbSet
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == assignmentId);
         }
 
-        public async Task<IEnumerable<Assignment>> GetByUserIdAsync(Guid employeeId)
+        public async Task<IEnumerable<Assignment>> GetAssignmentsByUserIdAsync(Guid employeeId)
         {
             return await _dbSet
                 .AsNoTracking()
@@ -53,7 +53,7 @@ namespace DAL.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Assignment>> GetByProjectIdAsync(Guid projectId)
+        public async Task<IEnumerable<Assignment>> GetAssignmentsByProjectIdAsync(Guid projectId)
         {
             return await _dbSet
                 .AsNoTracking()
@@ -61,7 +61,7 @@ namespace DAL.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Assignment>> GetAllAsync()
+        public async Task<IEnumerable<Assignment>> GetAllAssignmentAsync()
         {
             return await _dbSet
                 .AsNoTracking()

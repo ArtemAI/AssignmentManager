@@ -1,9 +1,10 @@
 ﻿using BLL.Models;
+using System.Threading.Tasks;
 
 namespace BLL.Interfaces
 {
     public interface IEmailService
     {
-        void Send(EmailMessage emailMessage);
+        Task Send(EmailMessage emailMessage);
     }
 }

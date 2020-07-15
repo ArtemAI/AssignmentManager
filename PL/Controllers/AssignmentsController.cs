@@ -43,6 +43,7 @@ namespace PL.Controllers
                 var currentUser = await _userProfileService.GetUserByIdAsync(currentUserId);
                 return Ok(await _assignmentService.GetAssignmentByProjectIdAsync(currentUser.ProjectId));
             }
+
             return Ok(await _assignmentService.GetAssignmentByUserIdAsync(currentUserId));
         }
 
@@ -67,7 +68,6 @@ namespace PL.Controllers
         public async Task<ActionResult> CreateAssignmentAsync([FromBody] AssignmentDto assignment)
         {
             AssignmentDto createdAssignment = await _assignmentService.CreateAssignmentAsync(assignment);
-
             if(createdAssignment == null)
             {
                 return BadRequest("Assignment could not be created.");
@@ -86,6 +86,7 @@ namespace PL.Controllers
             }
 
             await _assignmentService.UpdateAssignmentAsync(assignment);
+
             return NoContent();
         }
 
@@ -98,6 +99,7 @@ namespace PL.Controllers
             }
 
             await _assignmentService.RemoveAssignmentAsync(assignmentId);
+
             return NoContent();
         }
     }

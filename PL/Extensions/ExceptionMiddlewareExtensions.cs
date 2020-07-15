@@ -9,7 +9,7 @@ namespace PL.Extensions
 {
     public static class ExceptionMiddlewareExtensions
     {
-        private static readonly Logger Logger = LogManager.GetLogger("ExceptionLogger");
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public static void ConfigureExceptionHandler(this IApplicationBuilder app)
         {
@@ -22,10 +22,10 @@ namespace PL.Extensions
 
                     var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
                     Logger.Error(contextFeature.Error);
-                    await context.Response.WriteAsync(new ErrorDetails()
+                    await context.Response.WriteAsync(new ErrorDetails
                     {
                         StatusCode = context.Response.StatusCode,
-                        Message = contextFeature.Error.Message
+                        Message = "Something went wrong. Please try again later."
                     }.ToString());
                 });
             });

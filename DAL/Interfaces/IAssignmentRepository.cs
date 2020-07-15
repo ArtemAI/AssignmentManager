@@ -7,13 +7,13 @@ namespace DAL.Interfaces
 {
     public interface IAssignmentRepository
     {
-        Assignment Add(Assignment item);
-        void Update(Assignment item);
-        void Remove(Assignment item);
+        Assignment AddAssignment(Assignment item);
+        void UpdateAssignment(Assignment item);
+        void RemoveAssignment(Assignment item);
 
-        Task<Assignment> GetByIdAsync(Guid assignmentId);
-        Task<IEnumerable<Assignment>> GetByUserIdAsync(Guid employeeId);
-        Task<IEnumerable<Assignment>> GetByProjectIdAsync(Guid projectId);
-        Task<IEnumerable<Assignment>> GetAllAsync();
+        Task<Assignment> GetAssignmentByIdAsync(Guid assignmentId);
+        Task<IEnumerable<Assignment>> GetAssignmentsByUserIdAsync(Guid employeeId);
+        Task<IEnumerable<Assignment>> GetAssignmentsByProjectIdAsync(Guid projectId);
+        Task<IEnumerable<Assignment>> GetAllAssignmentAsync();
     }
 }

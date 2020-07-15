@@ -21,30 +21,30 @@ namespace DAL.Repositories
             _dbSet = context.Projects;
         }
 
-        public Project Add(Project item)
+        public Project AddProject(Project item)
         {
             _dbSet.Add(item);
             return item;
         }
 
-        public void Update(Project item)
+        public void UpdateProject(Project item)
         {
             _dbContext.Entry(item).State = EntityState.Modified;
         }
 
-        public void Remove(Project item)
+        public void RemoveProject(Project item)
         {
             _dbSet.Remove(item);
         }
 
-        public async Task<Project> GetByIdAsync(Guid projectId)
+        public async Task<Project> GetProjectByIdAsync(Guid projectId)
         {
             return await _dbSet
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == projectId);
         }
 
-        public async Task<IEnumerable<Project>> GetAllAsync()
+        public async Task<IEnumerable<Project>> GetAllProjectsAsync()
         {
             return await _dbSet
                 .AsNoTracking()

@@ -88,8 +88,6 @@ namespace PL
                         ClockSkew = TimeSpan.Zero
                     };
                 });
-
-            services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<ApplicationUser> userManager,

@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Identity;
 namespace BLL.Services
 {
     /// <summary>
-    /// Performs UserProfile operations.
+    /// Performs operations on UserProfile entities.
     /// </summary>
     public class UserService : IUserService
     {
@@ -29,40 +29,33 @@ namespace BLL.Services
         public async Task<UserProfileDto> CreateUserProfileAsync(UserProfileDto user)
         {
             UserProfile mappedUser = _mapper.Map<UserProfile>(user);
-            UserProfile createdUser = _unitOfWork.UserProfiles.Add(mappedUser);
+            UserProfile createdUser = _unitOfWork.UserProfiles.AddUserProfile(mappedUser);
             await _unitOfWork.SaveAsync();
             return _mapper.Map<UserProfileDto>(createdUser);
-        }
-
-        public async Task RemoveUserAsync(Guid userId)
-        {
-            UserProfile user = await _unitOfWork.UserProfiles.GetByIdAsync(userId);
-            _unitOfWork.UserProfiles.Remove(user);
-            await _unitOfWork.SaveAsync();
         }
 
         public async Task UpdateUserAsync(UserProfileDto user)
         {
             UserProfile mappedUser = _mapper.Map<UserProfile>(user);
-            _unitOfWork.UserProfiles.Update(mappedUser);
+            _unitOfWork.UserProfiles.UpdateUserProfile(mappedUser);
             await _unitOfWork.SaveAsync();
         }
 
         public async Task<UserProfileDto> GetUserByIdAsync(Guid userProfileId)
         {
-            UserProfile user = await _unitOfWork.UserProfiles.GetByIdAsync(userProfileId);
+            UserProfile user = await _unitOfWork.UserProfiles.GetUserProfileByIdAsync(userProfileId);
             return _mapper.Map<UserProfileDto>(user);
         }
 
         public async Task<IEnumerable<UserProfileDto>> GetUserByProjectIdAsync(Guid projectId)
         {
-            IEnumerable<UserProfile> userProfiles = await _unitOfWork.UserProfiles.GetByProjectIdAsync(projectId);
+            IEnumerable<UserProfile> userProfiles = await _unitOfWork.UserProfiles.GetUserProfileByProjectIdAsync(projectId);
             return _mapper.Map<IEnumerable<UserProfileDto>>(userProfiles);
         }
 
         public async Task<IEnumerable<UserProfileDto>> GetAllUsersAsync()
         {
-            IEnumerable<UserProfile> userProfiles = await _unitOfWork.UserProfiles.GetAllAsync();
+            IEnumerable<UserProfile> userProfiles = await _unitOfWork.UserProfiles.GetAllUserProfilesAsync();
             return _mapper.Map<IEnumerable<UserProfileDto>>(userProfiles);
         }
 

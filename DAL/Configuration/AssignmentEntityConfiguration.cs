@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DAL.Configuration
 {
+    /// <summary>
+    /// Performs configuration of the Assignment entity.
+    /// </summary>
     class AssignmentEntityConfiguration : IEntityTypeConfiguration<Assignment>
     {
         public void Configure(EntityTypeBuilder<Assignment> builder)

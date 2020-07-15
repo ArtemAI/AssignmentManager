@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace PL.Identity
 {
+    /// <summary>
+    /// Adds test data about application users to the database.
+    /// </summary>
     public static class IdentityDataInitializer
     {
         public static void SeedData(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)

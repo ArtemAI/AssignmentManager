@@ -22,30 +22,25 @@ namespace DAL.Repositories
             _dbSet = context.UserProfiles;
         }
 
-        public UserProfile Add(UserProfile item)
+        public UserProfile AddUserProfile(UserProfile item)
         {
             _dbSet.Add(item);
             return item;
         }
 
-        public void Update(UserProfile item)
+        public void UpdateUserProfile(UserProfile item)
         {
             _dbContext.Entry(item).State = EntityState.Modified;
         }
 
-        public void Remove(UserProfile item)
-        {
-            _dbSet.Remove(item);
-        }
-
-        public async Task<UserProfile> GetByIdAsync(Guid userProfileId)
+        public async Task<UserProfile> GetUserProfileByIdAsync(Guid userProfileId)
         {
             return await _dbSet
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == userProfileId);
         }
 
-        public async Task<IEnumerable<UserProfile>> GetByProjectIdAsync(Guid projectId)
+        public async Task<IEnumerable<UserProfile>> GetUserProfileByProjectIdAsync(Guid projectId)
         {
             return await _dbSet
                 .AsNoTracking()
@@ -53,7 +48,7 @@ namespace DAL.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<UserProfile>> GetAllAsync()
+        public async Task<IEnumerable<UserProfile>> GetAllUserProfilesAsync()
         {
             return await _dbSet
                 .AsNoTracking()

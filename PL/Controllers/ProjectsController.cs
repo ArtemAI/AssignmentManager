@@ -53,7 +53,6 @@ namespace PL.Controllers
         public async Task<ActionResult<ProjectDto>> GetProjectByIdAsync(Guid projectId)
         {
             ProjectDto project = await _projectService.GetProjectByIdAsync(projectId);
-
             if (project == null)
             {
                 return NotFound();
@@ -65,7 +64,9 @@ namespace PL.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateProjectAsync([FromBody] ProjectDto project)
         {
-            ProjectDto createdProject = await _projectService.CreateProjectAsync(project);
+            var currentUserId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            ProjectDto createdProject = await _projectService.CreateProjectAsync(project, currentUserId);
+
             return CreatedAtRoute("GetProject", new {projectId = createdProject.Id}, createdProject);
         }
 
@@ -73,13 +74,13 @@ namespace PL.Controllers
         public async Task<ActionResult> UpdateProjectAsync(Guid projectId, [FromBody] ProjectDto project)
         {
             ProjectDto existingProject = await _projectService.GetProjectByIdAsync(projectId);
-
             if (existingProject == null)
             {
                 return NotFound();
             }
 
             await _projectService.UpdateProjectAsync(project);
+
             return NoContent();
         }
 
@@ -92,6 +93,7 @@ namespace PL.Controllers
             }
 
             await _projectService.RemoveProjectAsync(projectId);
+
             return NoContent();
         }
 
@@ -107,13 +109,13 @@ namespace PL.Controllers
         {
             var currentUserId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var currentManagerId = _projectService.GetProjectManagerById(projectId).Result?.Id;
-
             if (!User.IsInRole("Administrator") && currentManagerId != currentUserId)
             {
                 return Unauthorized();
             }
 
             await _projectService.SetProjectManagerById(projectId, userId);
+
             return NoContent();
         }
     }

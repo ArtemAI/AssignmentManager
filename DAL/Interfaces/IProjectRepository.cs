@@ -7,11 +7,11 @@ namespace DAL.Interfaces
 {
     public interface IProjectRepository
     {
-        Project Add(Project item);
-        void Update(Project item);
-        void Remove(Project item);
+        Project AddProject(Project item);
+        void UpdateProject(Project item);
+        void RemoveProject(Project item);
 
-        Task<Project> GetByIdAsync(Guid projectId);
-        Task<IEnumerable<Project>> GetAllAsync();
+        Task<Project> GetProjectByIdAsync(Guid projectId);
+        Task<IEnumerable<Project>> GetAllProjectsAsync();
     }
 }
