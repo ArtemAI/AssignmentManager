@@ -31,7 +31,6 @@ export class LoginComponent {
         this.router.navigateByUrl('/');
       }, loginError => {
         this.errorMessage = loginError.error;
-        console.log(loginError.error);
       }
     );
   }

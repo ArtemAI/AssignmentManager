@@ -1,6 +1,9 @@
 <div class="animated fadeIn">
   <div class="row">
-    <table class="table table-hover">
+    <div class="mx-auto" *ngIf="userList?.length == 0">
+      <p class="font-weight-light text-info">You are not connected to any project yet.</p>
+    </div>
+    <table class="table table-hover" *ngIf="projectList?.length > 0">
       <thead>
         <tr>
           <th>Name</th>
@@ -28,6 +31,9 @@
         </tr>
       </tbody>
     </table>
+    <div>
+      <button type="button" (click)="onCreateButtonClicked()" class="btn btn-sm btn-success">New project</button>
+    </div>
   </div>
 </div>
 <div bsModal #infoModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"

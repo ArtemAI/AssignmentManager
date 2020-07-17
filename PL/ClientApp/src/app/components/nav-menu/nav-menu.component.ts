@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
+import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-nav-menu',
@@ -7,9 +8,9 @@ import { AuthService } from 'src/app/services/auth.service';
   styleUrls: ['./nav-menu.component.css']
 })
 export class NavMenuComponent {
-  isExpanded = false;
   userName: any;
   isUserLoggedIn: boolean = this.authenticationService.isLoggedIn();
+  logOutIcon = faSignOutAlt;
 
   constructor(private authenticationService: AuthService) { }
 
@@ -20,11 +21,7 @@ export class NavMenuComponent {
     });
   }
 
-  collapse() {
-    this.isExpanded = false;
-  }
-
-  toggle() {
-    this.isExpanded = !this.isExpanded;
+  logUserOut() {
+    this.authenticationService.logout();
   }
 }

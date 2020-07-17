@@ -2,10 +2,6 @@
   <nav class=" navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
     <div class="container">
       <a class="navbar-brand" [routerLink]="['/']">Assignment Manager</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse"
-        aria-label="Toggle navigation" [attr.aria-expanded]="isExpanded" (click)="toggle()">
-        <span class="navbar-toggler-icon"></span>
-      </button>
       <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row ml-5" [ngClass]="{ show: isExpanded }">
         <ul class="navbar-nav flex-grow">
           <li class="nav-item" [routerLinkActive]="['link-active']">
@@ -20,7 +16,9 @@
         </ul>
       </div>
       <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-        <span>Logged in as: {{ userName }}</span>
+        <span>Logged in as: {{ userName }}&nbsp;&nbsp;<a href="#" (click)="logUserOut()">
+            <fa-icon [icon]="logOutIcon"></fa-icon>
+          </a></span>
       </div>
     </div>
   </nav>

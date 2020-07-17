@@ -1,6 +1,9 @@
 <div class="animated fadeIn">
   <div class="row">
-    <table class="table table-hover">
+    <div class="mx-auto" *ngIf="userList?.length == 0">
+      <p class="font-weight-light text-info">You don't have any assignments yet.</p>
+    </div>
+    <table class="table table-hover" *ngIf="assignmentList?.length > 0">
       <thead>
         <tr>
           <th>Name</th>
@@ -47,7 +50,9 @@
         </tr>
       </tbody>
     </table>
-    <button type="button" (click)="onCreateButtonClicked()" class="btn btn-sm btn-success">New assignment</button>
+    <div>
+      <button type="button" (click)="onCreateButtonClicked()" class="btn btn-sm btn-success">New assignment</button>
+    </div>
   </div>
 </div>
 <div bsModal #createModal="bs-modal" class="modal fade" tabindex="-1" role="dialog">
