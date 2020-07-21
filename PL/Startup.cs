@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using PL.Extensions;
 using PL.Identity;
+using PL.Models;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -38,9 +39,14 @@ namespace PL
             {
                 options.InvalidModelStateResponseFactory = context =>
                 {
-                    object responseObject = context.ModelState
-                        .Select(entry => entry.Value.Errors.Select(error => error.ErrorMessage))
-                        .Aggregate(Enumerable.Empty<string>(), (agg, val) => agg.Concat(val));
+                    object responseObject = new ErrorDetails
+                    {
+                        StatusCode = 400,
+                        Message = context.ModelState
+                            .Select(entry => entry.Value.Errors.Select(error => error.ErrorMessage))
+                            .Aggregate(Enumerable.Empty<string>(), (agg, val) => agg.Concat(val))
+                            .FirstOrDefault()
+                    };
                     return new BadRequestObjectResult(responseObject);
                 };
             });
@@ -97,10 +103,12 @@ namespace PL
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.ConfigureExceptionHandler();
+            }
 
             IdentityDataInitializer.SeedData(userManager, roleManager);
-
-            app.ConfigureExceptionHandler();
 
             app.UseHttpsRedirection();
 

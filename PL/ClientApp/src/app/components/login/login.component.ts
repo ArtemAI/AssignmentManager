@@ -30,7 +30,7 @@ export class LoginComponent {
       () => {
         this.router.navigateByUrl('/');
       }, loginError => {
-        this.errorMessage = loginError.error;
+        this.errorMessage = loginError.error.message;
       }
     );
   }

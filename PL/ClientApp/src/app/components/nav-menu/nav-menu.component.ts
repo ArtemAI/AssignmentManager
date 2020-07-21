@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-nav-menu',
@@ -9,19 +10,20 @@ import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 })
 export class NavMenuComponent {
   userName: any;
-  isUserLoggedIn: boolean = this.authenticationService.isLoggedIn();
+  isUserLoggedIn: boolean = this.authService.isLoggedIn();
   logOutIcon = faSignOutAlt;
 
-  constructor(private authenticationService: AuthService) { }
+  constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
-    this.authenticationService.getLoggedInName.subscribe(name => {
+    this.authService.getLoggedInName.subscribe(name => {
       this.userName = name;
       this.isUserLoggedIn = true;
     });
   }
 
   logUserOut() {
-    this.authenticationService.logout();
+    this.authService.logout();
+    this.router.navigateByUrl('/');
   }
 }

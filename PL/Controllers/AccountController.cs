@@ -3,6 +3,7 @@ using BLL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using PL.Models;
 
 namespace PL.Controllers
 {
@@ -28,11 +29,15 @@ namespace PL.Controllers
 
             if (loggedInUser == null)
             {
-                return BadRequest("Invalid username or password.");
+                return BadRequest(new ErrorDetails
+                {
+                    StatusCode = 400,
+                    Message = "Invalid username or password."
+                });
             }
 
             var token = await _accountService.GenerateJwt(loggedInUser);
-            return Ok(token);
+            return Ok(new { token });
         }
 
         [HttpPost]
@@ -42,11 +47,15 @@ namespace PL.Controllers
 
             if (registeredUser == null)
             {
-                return BadRequest("Could not create user. Please check entered data.");
+                return BadRequest(new ErrorDetails
+                {
+                    StatusCode = 400,
+                    Message = "Could not create user. Please check entered data."
+                });
             }
 
             var token = await _accountService.GenerateJwt(registeredUser);
-            return Ok(token);
+            return Ok(new { token });
         }
     }
 }

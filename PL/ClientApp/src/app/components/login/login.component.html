@@ -9,7 +9,7 @@
                 <form [formGroup]="loginForm">
                   <h1>Login</h1>
                   <p class="text-muted">Sign In to your account</p>
-                  <div class="alert alert-danger" *ngIf="this.errorMessage">
+                  <div class="alert alert-danger" *ngIf="errorMessage">
                     {{ errorMessage }}
                   </div>
                   <div class="input-group mb-3">

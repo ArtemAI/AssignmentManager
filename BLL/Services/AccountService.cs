@@ -61,6 +61,7 @@ namespace BLL.Services
         /// <returns>An application user's record or null if registration was not successful.</returns>
         public async Task<ApplicationUser> Register(RegisterUserDto user)
         {
+            user.Id = Guid.NewGuid();
             var userProfile = _mapper.Map<UserProfile>(user);
             var identityUser = _mapper.Map<ApplicationUser>(user);
             var creationResult = await _userManager.CreateAsync(identityUser, user.Password);
@@ -71,7 +72,6 @@ namespace BLL.Services
                 await _userManager.AddToRoleAsync(registeredUser, "Employee");
                 await _signInManager.SignInAsync(registeredUser, false);
 
-                userProfile.Id = registeredUser.Id;
                 _unitOfWork.UserProfiles.AddUserProfile(userProfile);
                 await _unitOfWork.SaveAsync();
                 return registeredUser;
@@ -85,7 +85,7 @@ namespace BLL.Services
         /// </summary>
         /// <param name="user">An application user's record.</param>
         /// <returns>JSON Web Token object.</returns>
-        public async Task<object> GenerateJwt(ApplicationUser user)
+        public async Task<string> GenerateJwt(ApplicationUser user)
         {
             var claims = new List<Claim>
             {
@@ -95,7 +95,6 @@ namespace BLL.Services
             };
 
             var roles = await _userManager.GetRolesAsync(user);
-
             claims.AddRange(roles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role)));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfiguration.SecretKey));
@@ -110,7 +109,7 @@ namespace BLL.Services
                 signingCredentials: credentials
             );
 
-            return new { token = new JwtSecurityTokenHandler().WriteToken(token) };
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         #region IDisposable Support

@@ -58,7 +58,7 @@
 <div bsModal #createModal="bs-modal" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-info" role="document">
     <div class="modal-content">
-      <form [formGroup]="assignmentForm" (ngSubmit)="onSubmit(assignmentForm.value)">
+      <form [formGroup]="assignmentForm">
         <div class="modal-body">
           <div class="alert alert-danger" *ngIf="this.errorMessage">
             {{ errorMessage }}
@@ -113,7 +113,8 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary" [disabled]="!assignmentForm.valid">Submit</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!assignmentForm.valid"
+            (click)="onSubmit(assignmentForm.value)">Submit</button>
           <button type="button" class="btn btn-secondary" (click)="createModal.hide()">Close</button>
         </div>
       </form>

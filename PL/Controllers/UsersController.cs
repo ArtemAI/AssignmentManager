@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using PL.Models;
 
 namespace PL.Controllers
 {
@@ -53,7 +54,11 @@ namespace PL.Controllers
             UserProfileDto user = await _userProfileService.GetUserByIdAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return NotFound(new ErrorDetails
+                {
+                    StatusCode = 404,
+                    Message = "Could not find user with provided ID."
+                });
             }
 
             return Ok(user);
@@ -72,7 +77,11 @@ namespace PL.Controllers
             UserProfileDto existingUser = await _userProfileService.GetUserByIdAsync(userId);
             if (existingUser == null)
             {
-                return NotFound();
+                return NotFound(new ErrorDetails
+                {
+                    StatusCode = 404,
+                    Message = "Could not find user with provided ID."
+                });
             }
 
             await _userProfileService.UpdateUserAsync(user);
@@ -86,7 +95,11 @@ namespace PL.Controllers
             UserProfileDto existingUser = await _userProfileService.GetUserByIdAsync(userId);
             if (existingUser == null)
             {
-                return NotFound();
+                return NotFound(new ErrorDetails
+                {
+                    StatusCode = 404,
+                    Message = "Could not find user with provided ID."
+                });
             }
 
             await _userProfileService.SetUserRole(userId, role);

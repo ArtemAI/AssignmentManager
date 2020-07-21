@@ -55,17 +55,17 @@ namespace BLL.Services
             return _mapper.Map<AssignmentDto>(createdAssignment);
         }
 
-        public async Task RemoveAssignmentAsync(Guid assignmentId)
-        {
-            Assignment assignment = await _unitOfWork.Assignments.GetAssignmentByIdAsync(assignmentId);
-            _unitOfWork.Assignments.RemoveAssignment(assignment);
-            await _unitOfWork.SaveAsync();
-        }
-
         public async Task UpdateAssignmentAsync(AssignmentDto assignment)
         {
             Assignment mappedAssignment = _mapper.Map<Assignment>(assignment);
             _unitOfWork.Assignments.UpdateAssignment(mappedAssignment);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task RemoveAssignmentAsync(Guid assignmentId)
+        {
+            Assignment assignment = await _unitOfWork.Assignments.GetAssignmentByIdAsync(assignmentId);
+            _unitOfWork.Assignments.RemoveAssignment(assignment);
             await _unitOfWork.SaveAsync();
         }
 

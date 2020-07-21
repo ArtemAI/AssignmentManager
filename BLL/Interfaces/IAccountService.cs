@@ -8,6 +8,6 @@ namespace BLL.Interfaces
     {
         Task<ApplicationUser> Login(string email, string password);
         Task<ApplicationUser> Register(RegisterUserDto user);
-        Task<object> GenerateJwt(ApplicationUser user);
+        Task<string> GenerateJwt(ApplicationUser user);
     }
 }

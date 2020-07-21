@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using PL.Models;
 
 namespace PL.Controllers
 {
@@ -55,7 +56,11 @@ namespace PL.Controllers
             ProjectDto project = await _projectService.GetProjectByIdAsync(projectId);
             if (project == null)
             {
-                return NotFound();
+                return NotFound(new ErrorDetails
+                {
+                    StatusCode = 404,
+                    Message = "Could not find project with provided ID."
+                });
             }
 
             return Ok(project);
@@ -76,7 +81,11 @@ namespace PL.Controllers
             ProjectDto existingProject = await _projectService.GetProjectByIdAsync(projectId);
             if (existingProject == null)
             {
-                return NotFound();
+                return NotFound(new ErrorDetails
+                {
+                    StatusCode = 404,
+                    Message = "Could not find project with provided ID."
+                });
             }
 
             await _projectService.UpdateProjectAsync(project);
@@ -89,7 +98,11 @@ namespace PL.Controllers
         {
             if (await _projectService.GetProjectByIdAsync(projectId) == null)
             {
-                return NotFound();
+                return NotFound(new ErrorDetails
+                {
+                    StatusCode = 404,
+                    Message = "Could not find project with provided ID."
+                });
             }
 
             await _projectService.RemoveProjectAsync(projectId);
@@ -111,7 +124,11 @@ namespace PL.Controllers
             var currentManagerId = _projectService.GetProjectManagerById(projectId).Result?.Id;
             if (!User.IsInRole("Administrator") && currentManagerId != currentUserId)
             {
-                return Unauthorized();
+                return Unauthorized(new ErrorDetails
+                {
+                    StatusCode = 403,
+                    Message = "You do not have permission to perform this operation."
+                });
             }
 
             await _projectService.SetProjectManagerById(projectId, userId);

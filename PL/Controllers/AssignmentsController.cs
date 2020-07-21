@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using PL.Models;
 
 namespace PL.Controllers
 {
@@ -58,7 +59,11 @@ namespace PL.Controllers
             AssignmentDto assignment = await _assignmentService.GetAssignmentByIdAsync(assignmentId);
             if (assignment == null)
             {
-                return NotFound();
+                return NotFound(new ErrorDetails
+                {
+                    StatusCode = 404,
+                    Message = "Could not find assignment with provided ID."
+                });
             }
 
             return Ok(assignment);
@@ -68,10 +73,6 @@ namespace PL.Controllers
         public async Task<ActionResult> CreateAssignmentAsync([FromBody] AssignmentDto assignment)
         {
             AssignmentDto createdAssignment = await _assignmentService.CreateAssignmentAsync(assignment);
-            if(createdAssignment == null)
-            {
-                return BadRequest("Assignment could not be created.");
-            }
 
             return CreatedAtRoute("GetAssignment", new { assignmentId = createdAssignment.Id }, createdAssignment);
         }
@@ -82,7 +83,11 @@ namespace PL.Controllers
             AssignmentDto existingAssignment = await _assignmentService.GetAssignmentByIdAsync(assignmentId);
             if (existingAssignment == null)
             {
-                return NotFound();
+                return NotFound(new ErrorDetails
+                {
+                    StatusCode = 404,
+                    Message = "Could not find assignment with provided ID."
+                });
             }
 
             await _assignmentService.UpdateAssignmentAsync(assignment);
@@ -95,7 +100,11 @@ namespace PL.Controllers
         {
             if (await _assignmentService.GetAssignmentByIdAsync(assignmentId) == null)
             {
-                return NotFound();
+                return NotFound(new ErrorDetails
+                {
+                    StatusCode = 404,
+                    Message = "Could not find assignment with provided ID."
+                });
             }
 
             await _assignmentService.RemoveAssignmentAsync(assignmentId);

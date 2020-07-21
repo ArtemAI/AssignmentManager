@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
-using System.Net;
 using NLog;
 using PL.Models;
+using System.Net;
 
 namespace PL.Extensions
 {
@@ -22,11 +22,12 @@ namespace PL.Extensions
 
                     var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
                     Logger.Error(contextFeature.Error);
-                    await context.Response.WriteAsync(new ErrorDetails
+                    var error = new ErrorDetails
                     {
                         StatusCode = context.Response.StatusCode,
                         Message = "Something went wrong. Please try again later."
-                    }.ToString());
+                    };
+                    await context.Response.WriteAsync(error.ToString());
                 });
             });
         }

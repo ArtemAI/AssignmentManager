@@ -111,7 +111,6 @@ export class AssignmentComponent {
   onSubmit(submittedAssignment: Assignment) {
     submittedAssignment.deadline.toLocaleDateString();
     if (submittedAssignment.id == null) {
-      console.log(submittedAssignment);
       this.assignmentService.create(submittedAssignment).subscribe(
         () => {
           this.assignmentList.push(submittedAssignment);
@@ -120,7 +119,8 @@ export class AssignmentComponent {
           this.createModal.hide();
         },
         submitError => {
-          this.errorMessage = submitError;
+          this.errorMessage = submitError.error.message;
+          console.log(submitError)
         }
       );
     }
@@ -134,7 +134,7 @@ export class AssignmentComponent {
           this.createModal.hide();
         },
         submitError => {
-          this.errorMessage = submitError;
+          this.errorMessage = submitError.error.message;
         }
       );
     }

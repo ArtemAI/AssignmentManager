@@ -36,7 +36,7 @@ export class RegisterComponent {
           () => {
             this.router.navigateByUrl('/');
           }, registerError => {
-            this.errorMessage = registerError.error;
+            this.errorMessage = registerError.error.message;
           }
         );
     }

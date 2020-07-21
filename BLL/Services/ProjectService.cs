@@ -32,17 +32,17 @@ namespace BLL.Services
             return _mapper.Map<ProjectDto>(createdProject);
         }
 
-        public async Task RemoveProjectAsync(Guid projectId)
-        {
-            Project project = await _unitOfWork.Projects.GetProjectByIdAsync(projectId);
-            _unitOfWork.Projects.RemoveProject(project);
-            await _unitOfWork.SaveAsync();
-        }
-
         public async Task UpdateProjectAsync(ProjectDto project)
         {
             Project mappedProject = _mapper.Map<Project>(project);
             _unitOfWork.Projects.UpdateProject(mappedProject);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task RemoveProjectAsync(Guid projectId)
+        {
+            Project project = await _unitOfWork.Projects.GetProjectByIdAsync(projectId);
+            _unitOfWork.Projects.RemoveProject(project);
             await _unitOfWork.SaveAsync();
         }
 
