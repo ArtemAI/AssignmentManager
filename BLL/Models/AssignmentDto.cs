@@ -19,7 +19,7 @@ namespace BLL.Models
         [Required]
         public AssignmentStatus Status { get; set; }
         [Deadline]
-        public DateTime Deadline { get; set; }
+        public DateTime? Deadline { get; set; }
         [Required]
         public Guid ProjectId { get; set; }
         [Required]

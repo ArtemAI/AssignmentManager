@@ -27,8 +27,8 @@ namespace BLL.Services
         {
             Project mappedProject = _mapper.Map<Project>(project);
             Project createdProject = _unitOfWork.Projects.AddProject(mappedProject);
-            await SetProjectManagerById(createdProject.Id, creatorId);
             await _unitOfWork.SaveAsync();
+            await SetProjectManagerById(createdProject.Id, creatorId);
             return _mapper.Map<ProjectDto>(createdProject);
         }
 
@@ -58,15 +58,20 @@ namespace BLL.Services
             return _mapper.Map<ProjectDto>(project);
         }
 
-        public async Task SetProjectManagerById(Guid projectId, Guid userId)
+        public async Task<bool> SetProjectManagerById(Guid projectId, Guid userId)
         {
             Project project = await _unitOfWork.Projects.GetProjectByIdAsync(projectId);
             UserProfile user = await _unitOfWork.UserProfiles.GetUserProfileByIdAsync(userId);
+            if(project == null || user == null)
+            {
+                return false;
+            }
             project.ManagerId = userId;
             user.ProjectId = projectId;
             _unitOfWork.Projects.UpdateProject(project);
             _unitOfWork.UserProfiles.UpdateUserProfile(user);
             await _unitOfWork.SaveAsync();
+            return true;
         }
 
         public async Task<UserProfileDto> GetProjectManagerById(Guid projectId)
@@ -76,7 +81,7 @@ namespace BLL.Services
             {
                 return null;
             }
-            UserProfile user = await _unitOfWork.UserProfiles.GetUserProfileByIdAsync((Guid) project.ManagerId);
+            UserProfile user = await _unitOfWork.UserProfiles.GetUserProfileByIdAsync((Guid)project.ManagerId);
             return _mapper.Map<UserProfileDto>(user);
         }
 

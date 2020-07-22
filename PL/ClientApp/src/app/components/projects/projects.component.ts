@@ -1,3 +1,4 @@
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { UserService } from './../../services/user.service';
 import { combineLatest } from 'rxjs';
 import { Component, ViewChild } from '@angular/core';
@@ -12,17 +13,32 @@ import { UserProfile } from 'src/app/models/user.profile.model';
 })
 export class ProjectComponent {
 
-  @ViewChild('infoModal', { static: false }) public infoModal: ModalDirective;
+  @ViewChild('createModal') createModal: ModalDirective;
+  @ViewChild('infoModal') infoModal: ModalDirective;
+  @ViewChild('deleteModal') deleteModal: ModalDirective;
 
-  public projectList: Project[];
-  public currentSelectedProject: Project;
-  public infoIcon = faInfo;
-  public pencilIcon = faPencilAlt;
-  public trashIcon = faTrash;
+  projectList: Project[];
+  currentSelectedProject: Project;
+  projectForm: FormGroup;
+  errorMessage: string;
+  infoIcon = faInfo;
+  pencilIcon = faPencilAlt;
+  trashIcon = faTrash;
 
-  constructor(public projectService: ProjectService, public userService: UserService) { }
+  constructor(private projectService: ProjectService,
+    private userService: UserService,
+    private formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
+    this.loadProjects();
+    this.projectForm = this.formBuilder.group({
+      'id': [null],
+      'name': ['', [Validators.required, Validators.maxLength(100)]],
+      'description': ['', Validators.maxLength(1000)]
+    });
+  }
+
+  loadProjects() {
     const combinedProjects$ = combineLatest(
       this.projectService.getAll(),
       this.userService.getAll(),
@@ -37,17 +53,49 @@ export class ProjectComponent {
 
     combinedProjects$.subscribe(result => {
       this.projectList = result;
-    }, error => console.error(error));
+    });
   }
 
-  transformToArray(value) {
-    if (value instanceof Array) {
-      return value;
+  onCreateButtonClicked() {
+    this.createModal.show()
+  }
+
+  onEditButtonClicked(selectedProject: Project) {
+    this.createModal.show();
+    this.projectForm.setValue({
+      id: selectedProject.id,
+      name: selectedProject.name,
+      description: selectedProject.description,
+    })
+  }
+
+  onSubmit(submittedProject: Project) {
+    if (submittedProject.id == null) {
+      this.projectService.create(submittedProject).subscribe(
+        () => {
+          this.projectList.push(submittedProject);
+          this.loadProjects();
+          this.projectForm.reset();
+          this.createModal.hide();
+        },
+        submitError => {
+          this.errorMessage = submitError.error.message;
+        }
+      );
     }
     else {
-      var array = [];
-      array.push(value);
-      return array;
+      this.projectService.update(submittedProject).subscribe(
+        () => {
+          var index = this.projectList.indexOf(this.currentSelectedProject);
+          this.projectList[index] = submittedProject;
+          this.loadProjects();
+          this.projectForm.reset();
+          this.createModal.hide();
+        },
+        submitError => {
+          this.errorMessage = submitError.error.message;
+        }
+      );
     }
   }
 
@@ -62,5 +110,14 @@ export class ProjectComponent {
     });
   }
 
-  onEditButtonClicked(selectedProject: Project) { }
+  transformToArray(value) {
+    if (value instanceof Array) {
+      return value;
+    }
+    else {
+      var array = [];
+      array.push(value);
+      return array;
+    }
+  }
 }

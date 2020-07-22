@@ -131,7 +131,15 @@ namespace PL.Controllers
                 });
             }
 
-            await _projectService.SetProjectManagerById(projectId, userId);
+            var result = await _projectService.SetProjectManagerById(projectId, userId);
+            if(!result)
+            {
+                return BadRequest(new ErrorDetails
+                {
+                    StatusCode = 400,
+                    Message = "Could not set manager of selected project."
+                });
+            }
 
             return NoContent();
         }

@@ -13,22 +13,22 @@ import { faInfo, faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons'
 })
 export class AssignmentComponent {
 
-  @ViewChild('createModal') public createModal: ModalDirective;
-  @ViewChild('infoModal') public infoModal: ModalDirective;
-  @ViewChild('deleteModal') public deleteModal: ModalDirective;
+  @ViewChild('createModal') createModal: ModalDirective;
+  @ViewChild('infoModal') infoModal: ModalDirective;
+  @ViewChild('deleteModal') deleteModal: ModalDirective;
 
-  public assignmentList: Assignment[];
-  public currentSelectedAssignment: Assignment;
-  public assignmentForm: FormGroup;
-  public errorMessage: string;
-  public infoIcon = faInfo;
-  public pencilIcon = faPencilAlt;
-  public trashIcon = faTrash;
+  assignmentList: Assignment[];
+  currentSelectedAssignment: Assignment;
+  assignmentForm: FormGroup;
+  errorMessage: string;
+  infoIcon = faInfo;
+  pencilIcon = faPencilAlt;
+  trashIcon = faTrash;
 
-  constructor(public assignmentService: AssignmentService,
-    public projectService: ProjectService,
-    public userService: UserService,
-    public formBuilder: FormBuilder) { }
+  constructor(private assignmentService: AssignmentService,
+    private projectService: ProjectService,
+    private userService: UserService,
+    private formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
     this.loadAssignmentList();
@@ -37,7 +37,7 @@ export class AssignmentComponent {
       'name': ['', [Validators.required, Validators.maxLength(100)]],
       'description': ['', Validators.maxLength(1000)],
       'priority': [1, Validators.required],
-      'deadline': [''],
+      'deadline': [],
       'status': [0],
       'completionPercent': [0, [Validators.min(0), Validators.max(100)]],
       'projectId': ['', Validators.required],
@@ -64,28 +64,6 @@ export class AssignmentComponent {
 
     combinedAssignments$.subscribe(result => {
       this.assignmentList = result;
-    }, error => console.error(error));
-  }
-
-  transformToArray(value) {
-    if (value instanceof Array) {
-      return value;
-    }
-    else {
-      var array = [];
-      array.push(value);
-      return array;
-    }
-  }
-
-  onInfoButtonClicked(selectedAssignment: Assignment) {
-    this.currentSelectedAssignment = selectedAssignment;
-    this.infoModal.show()
-  }
-
-  onDeleteButtonClicked(selectedAssignment: Assignment) {
-    this.assignmentService.delete(selectedAssignment.id).subscribe(response => {
-      this.assignmentList = this.assignmentList.filter(({ id }) => id !== selectedAssignment.id);
     });
   }
 
@@ -109,7 +87,9 @@ export class AssignmentComponent {
   }
 
   onSubmit(submittedAssignment: Assignment) {
-    submittedAssignment.deadline.toLocaleDateString();
+    if (submittedAssignment.deadline != null) {
+      submittedAssignment.deadline.toLocaleDateString();
+    }
     if (submittedAssignment.id == null) {
       this.assignmentService.create(submittedAssignment).subscribe(
         () => {
@@ -120,7 +100,6 @@ export class AssignmentComponent {
         },
         submitError => {
           this.errorMessage = submitError.error.message;
-          console.log(submitError)
         }
       );
     }
@@ -137,6 +116,28 @@ export class AssignmentComponent {
           this.errorMessage = submitError.error.message;
         }
       );
+    }
+  }
+
+  onInfoButtonClicked(selectedAssignment: Assignment) {
+    this.currentSelectedAssignment = selectedAssignment;
+    this.infoModal.show()
+  }
+
+  onDeleteButtonClicked(selectedAssignment: Assignment) {
+    this.assignmentService.delete(selectedAssignment.id).subscribe(response => {
+      this.assignmentList = this.assignmentList.filter(({ id }) => id !== selectedAssignment.id);
+    });
+  }
+
+  transformToArray(value) {
+    if (value instanceof Array) {
+      return value;
+    }
+    else {
+      var array = [];
+      array.push(value);
+      return array;
     }
   }
 }
