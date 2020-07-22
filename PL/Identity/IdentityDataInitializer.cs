@@ -47,16 +47,19 @@ namespace PL.Identity
 
         private static void SeedUsers(UserManager<ApplicationUser> userManager)
         {
-            Guid firstUserId = Guid.Parse("33293875-AB05-495D-8883-8C23BFB66C2C"),
-                secondUserId = Guid.Parse("546C8C7C-4A94-464B-8CC7-FFFB35BB0D29"),
-                thirdUserId = Guid.Parse("1E547CAB-DBED-41AA-95C9-4AFC3BA183A4"),
-                fourthUserId = Guid.Parse("07D28657-02A1-47AD-BE2F-7D0E0B4E45B1");
+            Guid[] userIds = new Guid[]
+            {
+                Guid.Parse("33293875-AB05-495D-8883-8C23BFB66C2C"),
+                Guid.Parse("546C8C7C-4A94-464B-8CC7-FFFB35BB0D29"),
+                Guid.Parse("1E547CAB-DBED-41AA-95C9-4AFC3BA183A4"),
+                Guid.Parse("07D28657-02A1-47AD-BE2F-7D0E0B4E45B1")
+            };
 
             if (userManager.FindByNameAsync("AdminUser").Result == null)
             {
                 var user = new ApplicationUser
                 {
-                    Id = firstUserId,
+                    Id = userIds[0],
                     UserName = "AdminUser",
                     Email = "admin@gmail.com"
                 };
@@ -72,7 +75,7 @@ namespace PL.Identity
             {
                 var user = new ApplicationUser
                 {
-                    Id = secondUserId,
+                    Id = userIds[1],
                     UserName = "ManagerUser",
                     Email = "manager@gmail.com"
                 };
@@ -88,7 +91,7 @@ namespace PL.Identity
             {
                 var user = new ApplicationUser
                 {
-                    Id = thirdUserId,
+                    Id = userIds[2],
                     UserName = "EmployeeUser",
                     Email = "employee@gmail.com"
                 };
@@ -104,7 +107,7 @@ namespace PL.Identity
             {
                 var user = new ApplicationUser
                 {
-                    Id = fourthUserId,
+                    Id = userIds[3],
                     UserName = "SecondEmployeeUser",
                     Email = "email@gmail.com"
                 };
