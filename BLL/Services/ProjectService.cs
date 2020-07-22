@@ -42,6 +42,7 @@ namespace BLL.Services
         public async Task RemoveProjectAsync(Guid projectId)
         {
             Project project = await _unitOfWork.Projects.GetProjectByIdAsync(projectId);
+            await RemoveProjectManagerById(projectId);
             _unitOfWork.Projects.RemoveProject(project);
             await _unitOfWork.SaveAsync();
         }
@@ -68,7 +69,7 @@ namespace BLL.Services
             }
             project.ManagerId = userId;
             user.ProjectId = projectId;
-            _unitOfWork.Projects.UpdateProject(project);
+            //_unitOfWork.Projects.UpdateProject(project);
             _unitOfWork.UserProfiles.UpdateUserProfile(user);
             await _unitOfWork.SaveAsync();
             return true;
@@ -77,12 +78,19 @@ namespace BLL.Services
         public async Task<UserProfileDto> GetProjectManagerById(Guid projectId)
         {
             Project project = await _unitOfWork.Projects.GetProjectByIdAsync(projectId);
-            if (project.ManagerId == null)
+            if (project == null)
             {
                 return null;
             }
             UserProfile user = await _unitOfWork.UserProfiles.GetUserProfileByIdAsync((Guid)project.ManagerId);
             return _mapper.Map<UserProfileDto>(user);
+        }
+
+        private async Task RemoveProjectManagerById(Guid projectId)
+        {
+            Project project = await _unitOfWork.Projects.GetProjectByIdAsync(projectId);
+            project.ManagerId = null;
+            await _unitOfWork.SaveAsync();
         }
 
         #region IDisposable Support

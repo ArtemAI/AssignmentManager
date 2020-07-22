@@ -22,7 +22,8 @@ namespace DAL.Configuration
 
             builder.HasOne(p => p.Manager)
                 .WithMany(u => u.ManagedProjects)
-                .HasForeignKey(p => p.ManagerId);
+                .HasForeignKey(p => p.ManagerId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

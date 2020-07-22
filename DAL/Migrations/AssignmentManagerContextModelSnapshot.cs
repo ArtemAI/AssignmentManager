@@ -15,7 +15,7 @@ namespace DAL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.3")
+                .HasAnnotation("ProductVersion", "3.1.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -62,86 +62,86 @@ namespace DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("5916ef2d-2075-44dc-a070-fa34a161f4cc"),
+                            Id = new Guid("e6efe661-925a-40dd-9ea8-c194170e35ef"),
                             AssigneeId = new Guid("1e547cab-dbed-41aa-95c9-4afc3ba183a4"),
                             CompletionPercent = 100,
-                            Deadline = new DateTime(2020, 4, 30, 0, 0, 0, 0, DateTimeKind.Local),
+                            Deadline = new DateTime(2020, 7, 19, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "Create project's GitHub repo.",
                             Name = "Setup project",
                             Priority = 2,
-                            ProjectId = new Guid("4d56d43a-092b-4023-82e0-870484a1223d"),
+                            ProjectId = new Guid("529b493e-d3e6-4065-8ed7-4e3a8a7df238"),
                             Status = 2
                         },
                         new
                         {
-                            Id = new Guid("e60bc80c-21bb-481d-b248-34f6ebfea153"),
+                            Id = new Guid("a5ae9821-fd63-447d-8210-c01451ce9ef7"),
                             AssigneeId = new Guid("1e547cab-dbed-41aa-95c9-4afc3ba183a4"),
                             CompletionPercent = 45,
-                            Deadline = new DateTime(2020, 5, 8, 0, 0, 0, 0, DateTimeKind.Local),
+                            Deadline = new DateTime(2020, 7, 27, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "Design high-level architecture of the project.",
                             Name = "Design system architecture",
-                            Priority = 4,
-                            ProjectId = new Guid("4d56d43a-092b-4023-82e0-870484a1223d"),
+                            Priority = 3,
+                            ProjectId = new Guid("529b493e-d3e6-4065-8ed7-4e3a8a7df238"),
                             Status = 1
                         },
                         new
                         {
-                            Id = new Guid("30e00597-cf30-4430-8899-ce43a9f91702"),
+                            Id = new Guid("0fadfa8b-d8df-458a-bb68-05b0a7956c89"),
                             AssigneeId = new Guid("1e547cab-dbed-41aa-95c9-4afc3ba183a4"),
                             CompletionPercent = 0,
-                            Deadline = new DateTime(2020, 5, 6, 0, 0, 0, 0, DateTimeKind.Local),
+                            Deadline = new DateTime(2020, 7, 25, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "Research and decide on unit test and mocking framework.",
                             Name = "Prepare for Unit Tests",
-                            Priority = 3,
-                            ProjectId = new Guid("4d56d43a-092b-4023-82e0-870484a1223d"),
+                            Priority = 2,
+                            ProjectId = new Guid("529b493e-d3e6-4065-8ed7-4e3a8a7df238"),
                             Status = 0
                         },
                         new
                         {
-                            Id = new Guid("01e37ff1-cf73-4602-9816-cf0753a42fb4"),
+                            Id = new Guid("fbbcfbaf-283e-4029-be35-5e66095dfc9c"),
                             AssigneeId = new Guid("1e547cab-dbed-41aa-95c9-4afc3ba183a4"),
                             CompletionPercent = 100,
-                            Deadline = new DateTime(2020, 5, 13, 0, 0, 0, 0, DateTimeKind.Local),
+                            Deadline = new DateTime(2020, 8, 1, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "Perform review of available software storage solutions.",
                             Name = "Review storage solutions",
-                            Priority = 1,
-                            ProjectId = new Guid("4d56d43a-092b-4023-82e0-870484a1223d"),
+                            Priority = 0,
+                            ProjectId = new Guid("529b493e-d3e6-4065-8ed7-4e3a8a7df238"),
                             Status = 2
                         },
                         new
                         {
-                            Id = new Guid("87d0cf39-219e-49e2-9d73-167b8bd19f4d"),
+                            Id = new Guid("680e01a4-57a1-4796-a585-fe6e56836348"),
                             AssigneeId = new Guid("1e547cab-dbed-41aa-95c9-4afc3ba183a4"),
                             CompletionPercent = 75,
-                            Deadline = new DateTime(2020, 5, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Deadline = new DateTime(2020, 7, 29, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "Improve performance of software that is developed.",
                             Name = "Performance improvements",
-                            Priority = 4,
-                            ProjectId = new Guid("4d56d43a-092b-4023-82e0-870484a1223d"),
+                            Priority = 3,
+                            ProjectId = new Guid("529b493e-d3e6-4065-8ed7-4e3a8a7df238"),
                             Status = 1
                         },
                         new
                         {
-                            Id = new Guid("894f91e1-2a0a-40a6-962d-cbe518deefe6"),
+                            Id = new Guid("153fa6dc-4320-4ec6-aa08-265593166618"),
                             AssigneeId = new Guid("07d28657-02a1-47ad-be2f-7d0e0b4e45b1"),
                             CompletionPercent = 100,
-                            Deadline = new DateTime(2020, 5, 1, 0, 0, 0, 0, DateTimeKind.Local),
+                            Deadline = new DateTime(2020, 7, 20, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "Create plan of automated testing of developed systems.",
                             Name = "Automated testing plan",
-                            Priority = 2,
-                            ProjectId = new Guid("4d56d43a-092b-4023-82e0-870484a1223d"),
+                            Priority = 1,
+                            ProjectId = new Guid("529b493e-d3e6-4065-8ed7-4e3a8a7df238"),
                             Status = 2
                         },
                         new
                         {
-                            Id = new Guid("f7600c74-4eb0-41ac-9eff-4ff01a72c2b4"),
+                            Id = new Guid("7aa1ceeb-26f3-486e-b0f0-c4c6dc1c1db6"),
                             AssigneeId = new Guid("07d28657-02a1-47ad-be2f-7d0e0b4e45b1"),
                             CompletionPercent = 50,
-                            Deadline = new DateTime(2020, 5, 6, 0, 0, 0, 0, DateTimeKind.Local),
+                            Deadline = new DateTime(2020, 7, 25, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "Perform functional testing of developed system.",
                             Name = "Functional testing",
-                            Priority = 3,
-                            ProjectId = new Guid("4d56d43a-092b-4023-82e0-870484a1223d"),
+                            Priority = 2,
+                            ProjectId = new Guid("529b493e-d3e6-4065-8ed7-4e3a8a7df238"),
                             Status = 1
                         });
                 });
@@ -172,19 +172,19 @@ namespace DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("961881bc-fa7e-419f-968e-f852792c51d4"),
+                            Id = new Guid("3f866896-c858-4b0f-9bf3-3fa3dca36827"),
                             Description = "Tiny project with small development team.",
                             Name = "Project A"
                         },
                         new
                         {
-                            Id = new Guid("4d56d43a-092b-4023-82e0-870484a1223d"),
+                            Id = new Guid("529b493e-d3e6-4065-8ed7-4e3a8a7df238"),
                             Description = "Medium project with average development team.",
                             Name = "Project B"
                         },
                         new
                         {
-                            Id = new Guid("86e85a6d-2a0e-4964-a606-3680985888a7"),
+                            Id = new Guid("3f35412d-1a07-4333-ae60-1fcd642cac61"),
                             Description = "Large project with big development team.",
                             Name = "Project C"
                         });
@@ -225,7 +225,7 @@ namespace DAL.Migrations
                             AllowEmailNotifications = false,
                             FirstName = "Andrey",
                             LastName = "Andrienko",
-                            ProjectId = new Guid("4d56d43a-092b-4023-82e0-870484a1223d")
+                            ProjectId = new Guid("529b493e-d3e6-4065-8ed7-4e3a8a7df238")
                         },
                         new
                         {
@@ -233,7 +233,7 @@ namespace DAL.Migrations
                             AllowEmailNotifications = true,
                             FirstName = "Bogdan",
                             LastName = "Bogdanov",
-                            ProjectId = new Guid("4d56d43a-092b-4023-82e0-870484a1223d")
+                            ProjectId = new Guid("529b493e-d3e6-4065-8ed7-4e3a8a7df238")
                         },
                         new
                         {
@@ -241,7 +241,7 @@ namespace DAL.Migrations
                             AllowEmailNotifications = true,
                             FirstName = "Artem",
                             LastName = "Chepak",
-                            ProjectId = new Guid("4d56d43a-092b-4023-82e0-870484a1223d")
+                            ProjectId = new Guid("529b493e-d3e6-4065-8ed7-4e3a8a7df238")
                         },
                         new
                         {
@@ -249,7 +249,7 @@ namespace DAL.Migrations
                             AllowEmailNotifications = true,
                             FirstName = "Sergey",
                             LastName = "Sergeev",
-                            ProjectId = new Guid("4d56d43a-092b-4023-82e0-870484a1223d")
+                            ProjectId = new Guid("529b493e-d3e6-4065-8ed7-4e3a8a7df238")
                         });
                 });
 
@@ -272,7 +272,8 @@ namespace DAL.Migrations
                 {
                     b.HasOne("DAL.Entities.UserProfile", "Manager")
                         .WithMany("ManagedProjects")
-                        .HasForeignKey("ManagerId");
+                        .HasForeignKey("ManagerId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("DAL.Entities.UserProfile", b =>
