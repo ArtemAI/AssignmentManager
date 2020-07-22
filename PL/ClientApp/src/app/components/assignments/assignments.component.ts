@@ -93,7 +93,6 @@ export class AssignmentComponent {
     if (submittedAssignment.id == null) {
       this.assignmentService.create(submittedAssignment).subscribe(
         () => {
-          this.assignmentList.push(submittedAssignment);
           this.loadAssignmentList();
           this.assignmentForm.reset();
           this.createModal.hide();
@@ -106,8 +105,6 @@ export class AssignmentComponent {
     else {
       this.assignmentService.update(submittedAssignment).subscribe(
         () => {
-          var index = this.assignmentList.indexOf(this.currentSelectedAssignment);
-          this.assignmentList[index] = submittedAssignment;
           this.loadAssignmentList();
           this.assignmentForm.reset();
           this.createModal.hide();

@@ -70,7 +70,7 @@ namespace PL.Controllers
         public async Task<ActionResult> CreateProjectAsync([FromBody] ProjectDto project)
         {
             var currentUserId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            ProjectDto createdProject = await _projectService.CreateProjectAsync(project, currentUserId);
+            var createdProject = await _projectService.CreateProjectAsync(project, currentUserId);
 
             return CreatedAtRoute("GetProject", new {projectId = createdProject.Id}, createdProject);
         }

@@ -272,15 +272,15 @@ namespace DAL.Migrations
                 {
                     b.HasOne("DAL.Entities.UserProfile", "Manager")
                         .WithMany("ManagedProjects")
-                        .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("ManagerId");
                 });
 
             modelBuilder.Entity("DAL.Entities.UserProfile", b =>
                 {
                     b.HasOne("DAL.Entities.Project", "Project")
                         .WithMany("Users")
-                        .HasForeignKey("ProjectId");
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 #pragma warning restore 612, 618
         }

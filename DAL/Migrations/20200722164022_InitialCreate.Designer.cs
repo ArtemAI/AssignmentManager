@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(AssignmentManagerContext))]
-    [Migration("20200722110530_InitialCreate")]
+    [Migration("20200722164022_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -274,15 +274,15 @@ namespace DAL.Migrations
                 {
                     b.HasOne("DAL.Entities.UserProfile", "Manager")
                         .WithMany("ManagedProjects")
-                        .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("ManagerId");
                 });
 
             modelBuilder.Entity("DAL.Entities.UserProfile", b =>
                 {
                     b.HasOne("DAL.Entities.Project", "Project")
                         .WithMany("Users")
-                        .HasForeignKey("ProjectId");
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 #pragma warning restore 612, 618
         }

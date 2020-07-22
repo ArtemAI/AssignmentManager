@@ -23,12 +23,12 @@ namespace BLL.Services
             _mapper = mapper;
         }
 
-        public async Task<ProjectDto> CreateProjectAsync(ProjectDto project, Guid creatorId)
+        public async Task<ProjectDto> CreateProjectAsync(ProjectDto project, Guid userId)
         {
             Project mappedProject = _mapper.Map<Project>(project);
             Project createdProject = _unitOfWork.Projects.AddProject(mappedProject);
             await _unitOfWork.SaveAsync();
-            await SetProjectManagerById(createdProject.Id, creatorId);
+            await SetProjectManagerById(createdProject.Id, userId, createdProject);
             return _mapper.Map<ProjectDto>(createdProject);
         }
 
@@ -42,7 +42,6 @@ namespace BLL.Services
         public async Task RemoveProjectAsync(Guid projectId)
         {
             Project project = await _unitOfWork.Projects.GetProjectByIdAsync(projectId);
-            await RemoveProjectManagerById(projectId);
             _unitOfWork.Projects.RemoveProject(project);
             await _unitOfWork.SaveAsync();
         }
@@ -59,17 +58,25 @@ namespace BLL.Services
             return _mapper.Map<ProjectDto>(project);
         }
 
-        public async Task<bool> SetProjectManagerById(Guid projectId, Guid userId)
+        /// <summary>
+        /// Sets the manager of specified project.
+        /// The project entity has to be provided as third parameter in case it was just created.
+        /// </summary>
+        /// <param name="projectId">A project identifier in the form of a GUID string.</param>
+        /// <param name="userId">A user identifier in the form of a GUID string.</param>
+        /// <param name="createdProject">A project entity (optional).</param>
+        /// <returns></returns>
+        public async Task<bool> SetProjectManagerById(Guid projectId, Guid userId, Project createdProject = null)
         {
-            Project project = await _unitOfWork.Projects.GetProjectByIdAsync(projectId);
-            UserProfile user = await _unitOfWork.UserProfiles.GetUserProfileByIdAsync(userId);
-            if(project == null || user == null)
+            var project = createdProject ?? await _unitOfWork.Projects.GetProjectByIdAsync(projectId);
+            var user = await _unitOfWork.UserProfiles.GetUserProfileByIdAsync(userId);
+            if (project == null || user == null)
             {
                 return false;
             }
             project.ManagerId = userId;
             user.ProjectId = projectId;
-            //_unitOfWork.Projects.UpdateProject(project);
+            _unitOfWork.Projects.UpdateProject(project);
             _unitOfWork.UserProfiles.UpdateUserProfile(user);
             await _unitOfWork.SaveAsync();
             return true;
@@ -84,13 +91,6 @@ namespace BLL.Services
             }
             UserProfile user = await _unitOfWork.UserProfiles.GetUserProfileByIdAsync((Guid)project.ManagerId);
             return _mapper.Map<UserProfileDto>(user);
-        }
-
-        private async Task RemoveProjectManagerById(Guid projectId)
-        {
-            Project project = await _unitOfWork.Projects.GetProjectByIdAsync(projectId);
-            project.ManagerId = null;
-            await _unitOfWork.SaveAsync();
         }
 
         #region IDisposable Support

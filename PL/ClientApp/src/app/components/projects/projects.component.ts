@@ -73,7 +73,6 @@ export class ProjectComponent {
     if (submittedProject.id == null) {
       this.projectService.create(submittedProject).subscribe(
         () => {
-          this.projectList.push(submittedProject);
           this.loadProjects();
           this.projectForm.reset();
           this.createModal.hide();
@@ -86,8 +85,6 @@ export class ProjectComponent {
     else {
       this.projectService.update(submittedProject).subscribe(
         () => {
-          var index = this.projectList.indexOf(this.currentSelectedProject);
-          this.projectList[index] = submittedProject;
           this.loadProjects();
           this.projectForm.reset();
           this.createModal.hide();
