@@ -30,3 +30,30 @@
     </table>
   </div>
 </div>
+<div bsModal #manageModal="bs-modal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-info" role="document">
+    <div class="modal-content">
+      <form [formGroup]="userManageForm" (ngSubmit)="onSubmit(userManageForm.value)">
+        <div class="modal-body">
+          <div class="alert alert-danger" *ngIf="this.errorMessage">
+            {{ errorMessage }}
+          </div>
+          <div class="form-row">
+            <div class="form-group col">
+              <label for="assigneeId">Username</label>
+              <input type="text" class="form-control" formControlName="username">
+            </div>
+            <div class="form-group col-md-6">
+              <label for="projectId">New role</label>
+              <input type="text" class="form-control" formControlName="role">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" [disabled]="!userManageForm.valid">Submit</button>
+          <button type="button" class="btn btn-secondary" (click)="manageModal.hide()">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

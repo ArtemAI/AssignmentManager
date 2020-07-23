@@ -1,27 +1,41 @@
 import { Component, ViewChild } from '@angular/core';
-import { ModalDirective } from 'ngx-bootstrap/modal';
 import { UserService } from '../../services/user.service'
 import { UserProfile } from '../../models/user.profile.model';
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 
 @Component({
   templateUrl: 'Users.component.html'
 })
 export class UserComponent {
 
-  @ViewChild('infoModal', { static: false }) public infoModal: ModalDirective;
+  @ViewChild('manageModal') manageModal: ModalDirective;
 
-  public userList: UserProfile[];
-  public currentSelectedItem: UserProfile;
-  public pencilIcon = faPencilAlt;
+  userList: UserProfile[];
+  currentSelectedUser: UserProfile;
+  userManageForm: FormGroup;
+  pencilIcon = faPencilAlt;
 
-  constructor(public userService: UserService) { }
+  constructor(private userService: UserService, private formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
+    this.userManageForm = this.formBuilder.group({
+      'username': [{ value: '', disabled: true }],
+      'role': ['', Validators.required]
+    });
     this.userService.getAll().subscribe(result => {
       this.userList = result;
     });
   }
 
-  onManageButtonClicked(selectedItem: UserProfile) { }
+  onManageButtonClicked(selectedUser: UserProfile) {
+    this.currentSelectedUser = selectedUser;
+    this.userManageForm.patchValue({ username: this.getUserFullName(selectedUser) });
+    this.manageModal.show();
+  }
+
+  getUserFullName(user: UserProfile): string {
+    return user.firstName + ' ' + user.lastName;
+  }
 }

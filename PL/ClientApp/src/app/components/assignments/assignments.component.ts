@@ -110,20 +110,6 @@ export class AssignmentComponent {
     });
   }
 
-  getUserIdByName(userName: string): string {
-    var result: string;
-    this.userList.forEach(element => {
-      if (this.getUserFullName(element) === userName) {
-        result = element.id;
-      }
-    });
-    return result;
-  }
-
-  getUserFullName(user: UserProfile): string {
-    return user.firstName + ' ' + user.lastName;
-  }
-
   onSubmit(submittedAssignment: Assignment) {
     if (submittedAssignment.deadline != null) {
       submittedAssignment.deadline.toLocaleDateString();
@@ -162,9 +148,29 @@ export class AssignmentComponent {
   }
 
   onDeleteButtonClicked(selectedAssignment: Assignment) {
-    this.assignmentService.delete(selectedAssignment.id).subscribe(response => {
-      this.assignmentList = this.assignmentList.filter(({ id }) => id !== selectedAssignment.id);
+    this.currentSelectedAssignment = selectedAssignment;
+    this.deleteModal.show();
+  }
+
+  onDeletionConfirm() {
+    this.assignmentService.delete(this.currentSelectedAssignment.id).subscribe(() => {
+      this.assignmentList = this.assignmentList.filter(({ id }) => id !== this.currentSelectedAssignment.id);
+      this.deleteModal.hide();
     });
+  }
+
+  getUserIdByName(userName: string): string {
+    var result: string;
+    this.userList.forEach(element => {
+      if (this.getUserFullName(element) === userName) {
+        result = element.id;
+      }
+    });
+    return result;
+  }
+
+  getUserFullName(user: UserProfile): string {
+    return user.firstName + ' ' + user.lastName;
   }
 
   transformToArray(value) {

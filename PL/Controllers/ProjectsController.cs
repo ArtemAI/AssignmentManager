@@ -75,6 +75,7 @@ namespace PL.Controllers
         }
 
         [HttpPut("{projectId}")]
+        [Authorize(Roles = "Manager,Administrator")]
         public async Task<ActionResult> UpdateProjectAsync(Guid projectId, [FromBody] ProjectDto project)
         {
             var result = await _projectService.UpdateProjectAsync(project);
@@ -90,6 +91,7 @@ namespace PL.Controllers
         }
 
         [HttpDelete("{projectId}")]
+        [Authorize(Roles = "Manager,Administrator")]
         public async Task<ActionResult> DeleteProjectAsync(Guid projectId)
         {
             var result = await _projectService.RemoveProjectAsync(projectId);

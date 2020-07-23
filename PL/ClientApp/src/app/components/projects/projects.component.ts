@@ -100,8 +100,14 @@ export class ProjectComponent {
   }
 
   onDeleteButtonClicked(selectedProject: Project) {
-    this.projectService.delete(selectedProject.id).subscribe(response => {
-      this.projectList = this.projectList.filter(({ id }) => id !== selectedProject.id);
+    this.currentSelectedProject = selectedProject;
+    this.deleteModal.show();
+  }
+
+  onDeletionConfirm() {
+    this.projectService.delete(this.currentSelectedProject.id).subscribe(response => {
+      this.projectList = this.projectList.filter(({ id }) => id !== this.currentSelectedProject.id);
+      this.deleteModal.hide();
     });
   }
 
