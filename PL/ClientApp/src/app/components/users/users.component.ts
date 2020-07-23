@@ -20,7 +20,7 @@ export class UserComponent {
   ngOnInit(): void {
     this.userService.getAll().subscribe(result => {
       this.userList = result;
-    }, error => console.error(error));
+    });
   }
 
   onManageButtonClicked(selectedItem: UserProfile) { }

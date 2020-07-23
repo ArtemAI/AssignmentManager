@@ -7,7 +7,7 @@ namespace DAL.Configuration
     /// <summary>
     /// Performs configuration of the UserProfile entity.
     /// </summary>
-    class UserProfileEntityConfiguration : IEntityTypeConfiguration<UserProfile>
+    internal class UserProfileEntityConfiguration : IEntityTypeConfiguration<UserProfile>
     {
         public void Configure(EntityTypeBuilder<UserProfile> builder)
         {

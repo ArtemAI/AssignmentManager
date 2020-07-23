@@ -1,6 +1,6 @@
-﻿using DAL.Entities;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using DAL.Entities;
 
 namespace BLL.Models
 {

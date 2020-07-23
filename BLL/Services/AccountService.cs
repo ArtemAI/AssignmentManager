@@ -1,17 +1,17 @@
-﻿using AutoMapper;
-using BLL.Interfaces;
-using BLL.Models;
-using DAL.Entities;
-using DAL.Interfaces;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using BLL.Interfaces;
+using BLL.Models;
+using DAL.Entities;
+using DAL.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BLL.Services
 {
@@ -20,11 +20,11 @@ namespace BLL.Services
     /// </summary>
     public class AccountService : IAccountService
     {
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IJwtConfiguration _jwtConfiguration;
         private readonly IMapper _mapper;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public AccountService(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager,
             IUnitOfWork unitOfWork, IJwtConfiguration jwtConfiguration, IMapper mapper)
@@ -47,7 +47,7 @@ namespace BLL.Services
             var result = await _signInManager.PasswordSignInAsync(username, password, false, false);
 
             if (result.Succeeded)
-            { 
+            {
                 return await _userManager.FindByNameAsync(username);
             }
 
@@ -113,7 +113,8 @@ namespace BLL.Services
         }
 
         #region IDisposable Support
-        private bool _disposedValue = false;
+
+        private bool _disposedValue;
 
         protected virtual void Dispose(bool disposing)
         {
@@ -123,6 +124,7 @@ namespace BLL.Services
                 {
                     _unitOfWork.Dispose();
                 }
+
                 _disposedValue = true;
             }
         }
@@ -131,6 +133,7 @@ namespace BLL.Services
         {
             Dispose(true);
         }
+
         #endregion
     }
 }

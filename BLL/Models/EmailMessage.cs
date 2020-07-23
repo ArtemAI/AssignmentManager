@@ -4,7 +4,7 @@ namespace BLL.Models
 {
     public class EmailMessage
     {
-		public EmailMessage()
+        public EmailMessage()
         {
             ToAddresses = new List<EmailAddress>();
         }
@@ -12,5 +12,5 @@ namespace BLL.Models
         public List<EmailAddress> ToAddresses { get; set; }
         public string Subject { get; set; }
         public string Content { get; set; }
-	}
+    }
 }

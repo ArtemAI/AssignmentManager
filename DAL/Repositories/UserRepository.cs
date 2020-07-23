@@ -1,17 +1,17 @@
 ﻿using System;
-using DAL.Entities;
-using DAL.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DAL.Entities;
+using DAL.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories
 {
     /// <summary>
     /// Repository pattern implementation that allows to perform CRUD operations and select UserProfile records.
     /// </summary>
-    class UserRepository : IUserRepository
+    internal class UserRepository : IUserRepository
     {
         private readonly AssignmentManagerContext _dbContext;
         private readonly DbSet<UserProfile> _dbSet;

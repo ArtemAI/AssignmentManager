@@ -1,11 +1,11 @@
 ﻿using System;
-using BLL.Interfaces;
-using BLL.Models;
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using BLL.Interfaces;
+using BLL.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PL.Models;
 
 namespace PL.Controllers
@@ -54,11 +54,7 @@ namespace PL.Controllers
             UserProfileDto user = await _userProfileService.GetUserByIdAsync(userId);
             if (user == null)
             {
-                return NotFound(new ErrorDetails
-                {
-                    StatusCode = 404,
-                    Message = "Could not find user with provided ID."
-                });
+                return NotFound(new ErrorDetails {StatusCode = 404, Message = "Could not find user with provided ID."});
             }
 
             return Ok(user);
@@ -68,23 +64,17 @@ namespace PL.Controllers
         public async Task<ActionResult> CreateUserAsync([FromBody] UserProfileDto user)
         {
             UserProfileDto createdUser = await _userProfileService.CreateUserProfileAsync(user);
-            return CreatedAtRoute("GetUser", new { userId = createdUser.Id }, createdUser);
+            return CreatedAtRoute("GetUser", new {userId = createdUser.Id}, createdUser);
         }
 
         [HttpPut("{userId}")]
         public async Task<ActionResult> UpdateUserAsync(Guid userId, [FromBody] UserProfileDto user)
         {
-            UserProfileDto existingUser = await _userProfileService.GetUserByIdAsync(userId);
-            if (existingUser == null)
+            var result = await _userProfileService.UpdateUserAsync(user);
+            if (!result)
             {
-                return NotFound(new ErrorDetails
-                {
-                    StatusCode = 404,
-                    Message = "Could not find user with provided ID."
-                });
+                return NotFound(new ErrorDetails {StatusCode = 404, Message = "Could not find user with provided ID."});
             }
-
-            await _userProfileService.UpdateUserAsync(user);
 
             return NoContent();
         }
@@ -95,11 +85,7 @@ namespace PL.Controllers
             UserProfileDto existingUser = await _userProfileService.GetUserByIdAsync(userId);
             if (existingUser == null)
             {
-                return NotFound(new ErrorDetails
-                {
-                    StatusCode = 404,
-                    Message = "Could not find user with provided ID."
-                });
+                return NotFound(new ErrorDetails {StatusCode = 404, Message = "Could not find user with provided ID."});
             }
 
             await _userProfileService.SetUserRole(userId, role);

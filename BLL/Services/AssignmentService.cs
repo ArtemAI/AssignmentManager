@@ -1,11 +1,11 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
 using BLL.Interfaces;
 using BLL.Models;
 using DAL.Entities;
 using DAL.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 
 namespace BLL.Services
@@ -15,10 +15,10 @@ namespace BLL.Services
     /// </summary>
     public class AssignmentService : IAssignmentService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailService _emailService;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public AssignmentService(UserManager<ApplicationUser> userManager, IEmailService emailService,
             IUnitOfWork unitOfWork, IMapper mapper)
@@ -37,36 +37,48 @@ namespace BLL.Services
                 var assigneeUser = await _userManager.FindByIdAsync(assignee.Id.ToString());
                 var recipientAddress = new EmailAddress
                 {
-                    Address = assigneeUser.Email, 
-                    Name = $"{assignee.FirstName} {assignee.LastName}"
+                    Address = assigneeUser.Email, Name = $"{assignee.FirstName} {assignee.LastName}"
                 };
                 var infoMessage = new EmailMessage
                 {
                     Subject = "New assignment",
                     Content = $"You have been assigned to new task: {assignment.Name}.\n" +
-                              "Please visit your Assignments page for detailed information.",
+                              "Please visit your Assignments page for detailed information."
                 };
                 infoMessage.ToAddresses.Add(recipientAddress);
                 await _emailService.Send(infoMessage);
             }
-            Assignment mappedAssignment = _mapper.Map<Assignment>(assignment);
-            Assignment createdAssignment = _unitOfWork.Assignments.AddAssignment(mappedAssignment);
+
+            Assignment assignmentToCreate = _mapper.Map<Assignment>(assignment);
+            Assignment createdAssignment = _unitOfWork.Assignments.AddAssignment(assignmentToCreate);
             await _unitOfWork.SaveAsync();
             return _mapper.Map<AssignmentDto>(createdAssignment);
         }
 
-        public async Task UpdateAssignmentAsync(AssignmentDto assignment)
+        public async Task<bool> UpdateAssignmentAsync(AssignmentDto assignment)
         {
-            Assignment mappedAssignment = _mapper.Map<Assignment>(assignment);
-            _unitOfWork.Assignments.UpdateAssignment(mappedAssignment);
+            if (await _unitOfWork.Assignments.GetAssignmentByIdAsync((Guid)assignment.Id) == null)
+            {
+                return false;
+            }
+
+            var assignmentToUpdate = _mapper.Map<Assignment>(assignment);
+            _unitOfWork.Assignments.UpdateAssignment(assignmentToUpdate);
             await _unitOfWork.SaveAsync();
+            return true;
         }
 
-        public async Task RemoveAssignmentAsync(Guid assignmentId)
+        public async Task<bool> RemoveAssignmentAsync(Guid assignmentId)
         {
-            Assignment assignment = await _unitOfWork.Assignments.GetAssignmentByIdAsync(assignmentId);
-            _unitOfWork.Assignments.RemoveAssignment(assignment);
+            var assignmentToRemove = await _unitOfWork.Assignments.GetAssignmentByIdAsync(assignmentId);
+            if (assignmentToRemove == null)
+            {
+                return false;
+            }
+
+            _unitOfWork.Assignments.RemoveAssignment(assignmentToRemove);
             await _unitOfWork.SaveAsync();
+            return true;
         }
 
         public async Task<AssignmentDto> GetAssignmentByIdAsync(Guid assignmentId)
@@ -83,8 +95,9 @@ namespace BLL.Services
 
         public async Task<IEnumerable<AssignmentDto>> GetAssignmentByProjectIdAsync(Guid projectId)
         {
-            IEnumerable<Assignment> userAssignments = await _unitOfWork.Assignments.GetAssignmentsByProjectIdAsync(projectId);
-            return _mapper.Map<IEnumerable<AssignmentDto>>(userAssignments);
+            IEnumerable<Assignment> projectAssignments =
+                await _unitOfWork.Assignments.GetAssignmentsByProjectIdAsync(projectId);
+            return _mapper.Map<IEnumerable<AssignmentDto>>(projectAssignments);
         }
 
         public async Task<IEnumerable<AssignmentDto>> GetAllAssignmentsAsync()
@@ -94,7 +107,8 @@ namespace BLL.Services
         }
 
         #region IDisposable Support
-        private bool _disposedValue = false;
+
+        private bool _disposedValue;
 
         protected virtual void Dispose(bool disposing)
         {
@@ -104,6 +118,7 @@ namespace BLL.Services
                 {
                     _unitOfWork.Dispose();
                 }
+
                 _disposedValue = true;
             }
         }
@@ -112,6 +127,7 @@ namespace BLL.Services
         {
             Dispose(true);
         }
+
         #endregion
     }
 }

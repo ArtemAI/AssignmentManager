@@ -1,16 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using DAL.Entities;
 using DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace DAL.Repositories
 {
     /// <summary>
     /// Repository pattern implementation that allows to perform CRUD operations and select Project records.
     /// </summary>
-    class ProjectRepository : IProjectRepository
+    internal class ProjectRepository : IProjectRepository
     {
         private readonly AssignmentManagerContext _dbContext;
         private readonly DbSet<Project> _dbSet;

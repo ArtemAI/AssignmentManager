@@ -1,11 +1,11 @@
-﻿using BLL.Interfaces;
-using BLL.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using BLL.Interfaces;
+using BLL.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PL.Models;
 
 namespace PL.Controllers
@@ -58,8 +58,7 @@ namespace PL.Controllers
             {
                 return NotFound(new ErrorDetails
                 {
-                    StatusCode = 404,
-                    Message = "Could not find project with provided ID."
+                    StatusCode = 404, Message = "Could not find project with provided ID."
                 });
             }
 
@@ -78,17 +77,14 @@ namespace PL.Controllers
         [HttpPut("{projectId}")]
         public async Task<ActionResult> UpdateProjectAsync(Guid projectId, [FromBody] ProjectDto project)
         {
-            ProjectDto existingProject = await _projectService.GetProjectByIdAsync(projectId);
-            if (existingProject == null)
+            var result = await _projectService.UpdateProjectAsync(project);
+            if (!result)
             {
                 return NotFound(new ErrorDetails
                 {
-                    StatusCode = 404,
-                    Message = "Could not find project with provided ID."
+                    StatusCode = 404, Message = "Could not find project with provided ID."
                 });
             }
-
-            await _projectService.UpdateProjectAsync(project);
 
             return NoContent();
         }
@@ -96,26 +92,24 @@ namespace PL.Controllers
         [HttpDelete("{projectId}")]
         public async Task<ActionResult> DeleteProjectAsync(Guid projectId)
         {
-            if (await _projectService.GetProjectByIdAsync(projectId) == null)
+            var result = await _projectService.RemoveProjectAsync(projectId);
+            if (!result)
             {
                 return NotFound(new ErrorDetails
                 {
-                    StatusCode = 404,
-                    Message = "Could not find project with provided ID."
+                    StatusCode = 404, Message = "Could not find project with provided ID."
                 });
             }
-
-            await _projectService.RemoveProjectAsync(projectId);
 
             return NoContent();
         }
 
         /// <summary>
-        /// Sets manager of specified project.
+        /// Sets manager of specified project. User must be administrator or manager of selected project.
         /// </summary>
         /// <param name="projectId">A project identifier in the form of a GUID string.</param>
         /// <param name="userId">A user identifier in the form of a GUID string.</param>
-        /// <returns></returns>
+        /// <returns>HTTP status code 201 if operation is successful, error response otherwise.</returns>
         [HttpPut("{projectId}/manager")]
         [Authorize(Roles = "Manager,Administrator")]
         public async Task<ActionResult> SetProjectManager(Guid projectId, [FromBody] Guid userId)
@@ -126,18 +120,16 @@ namespace PL.Controllers
             {
                 return Unauthorized(new ErrorDetails
                 {
-                    StatusCode = 403,
-                    Message = "You do not have permission to perform this operation."
+                    StatusCode = 403, Message = "You do not have permission to perform this operation."
                 });
             }
 
             var result = await _projectService.SetProjectManagerById(projectId, userId);
-            if(!result)
+            if (!result)
             {
                 return BadRequest(new ErrorDetails
                 {
-                    StatusCode = 400,
-                    Message = "Could not set manager of selected project."
+                    StatusCode = 400, Message = "Could not find project or user with provided IDs."
                 });
             }
 

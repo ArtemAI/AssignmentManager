@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoMapper;
 using BLL.Interfaces;
 using BLL.Models;
 using DAL.Entities;
 using DAL.Interfaces;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 
 namespace BLL.Services
@@ -15,9 +15,9 @@ namespace BLL.Services
     /// </summary>
     public class UserService : IUserService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public UserService(UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, IMapper mapper)
         {
@@ -28,17 +28,23 @@ namespace BLL.Services
 
         public async Task<UserProfileDto> CreateUserProfileAsync(UserProfileDto user)
         {
-            UserProfile mappedUser = _mapper.Map<UserProfile>(user);
-            UserProfile createdUser = _unitOfWork.UserProfiles.AddUserProfile(mappedUser);
+            UserProfile userToCreate = _mapper.Map<UserProfile>(user);
+            UserProfile createdUser = _unitOfWork.UserProfiles.AddUserProfile(userToCreate);
             await _unitOfWork.SaveAsync();
             return _mapper.Map<UserProfileDto>(createdUser);
         }
 
-        public async Task UpdateUserAsync(UserProfileDto user)
+        public async Task<bool> UpdateUserAsync(UserProfileDto user)
         {
-            UserProfile mappedUser = _mapper.Map<UserProfile>(user);
-            _unitOfWork.UserProfiles.UpdateUserProfile(mappedUser);
+            if (await _unitOfWork.UserProfiles.GetUserProfileByIdAsync(user.Id) == null)
+            {
+                return false;
+            }
+
+            UserProfile userToUpdate = _mapper.Map<UserProfile>(user);
+            _unitOfWork.UserProfiles.UpdateUserProfile(userToUpdate);
             await _unitOfWork.SaveAsync();
+            return true;
         }
 
         public async Task<UserProfileDto> GetUserByIdAsync(Guid userProfileId)
@@ -49,8 +55,9 @@ namespace BLL.Services
 
         public async Task<IEnumerable<UserProfileDto>> GetUserByProjectIdAsync(Guid projectId)
         {
-            IEnumerable<UserProfile> userProfiles = await _unitOfWork.UserProfiles.GetUserProfileByProjectIdAsync(projectId);
-            return _mapper.Map<IEnumerable<UserProfileDto>>(userProfiles);
+            IEnumerable<UserProfile> projectUserProfiles =
+                await _unitOfWork.UserProfiles.GetUserProfileByProjectIdAsync(projectId);
+            return _mapper.Map<IEnumerable<UserProfileDto>>(projectUserProfiles);
         }
 
         public async Task<IEnumerable<UserProfileDto>> GetAllUsersAsync()
@@ -59,14 +66,21 @@ namespace BLL.Services
             return _mapper.Map<IEnumerable<UserProfileDto>>(userProfiles);
         }
 
-        public async Task SetUserRole(Guid userId, string role)
+        public async Task<bool> SetUserRole(Guid userId, string role)
         {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-            await _userManager.AddToRoleAsync(user, role);
+            var userToSetRole = await _userManager.FindByIdAsync(userId.ToString());
+            if (userToSetRole == null)
+            {
+                return false;
+            }
+
+            await _userManager.AddToRoleAsync(userToSetRole, role);
+            return true;
         }
 
         #region IDisposable Support
-        private bool _disposedValue = false;
+
+        private bool _disposedValue;
 
         protected virtual void Dispose(bool disposing)
         {
@@ -76,6 +90,7 @@ namespace BLL.Services
                 {
                     _unitOfWork.Dispose();
                 }
+
                 _disposedValue = true;
             }
         }
@@ -84,6 +99,7 @@ namespace BLL.Services
         {
             Dispose(true);
         }
+
         #endregion
     }
 }

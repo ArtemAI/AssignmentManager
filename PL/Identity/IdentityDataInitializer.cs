@@ -47,7 +47,7 @@ namespace PL.Identity
 
         private static void SeedUsers(UserManager<ApplicationUser> userManager)
         {
-            Guid[] userIds = new Guid[]
+            var userIds = new Guid[]
             {
                 Guid.Parse("33293875-AB05-495D-8883-8C23BFB66C2C"),
                 Guid.Parse("546C8C7C-4A94-464B-8CC7-FFFB35BB0D29"),

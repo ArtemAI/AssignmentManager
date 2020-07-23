@@ -58,7 +58,7 @@ export class AssignmentComponent {
           assignment.project = projects.find(project => project.id === assignment.projectId);
           assignment.assignee = users.find(user => user.id === assignment.assigneeId);
           return assignment;
-        })
+        });
       }
     );
 
@@ -68,7 +68,7 @@ export class AssignmentComponent {
   }
 
   onCreateButtonClicked() {
-    this.createModal.show()
+    this.createModal.show();
   }
 
   onEditButtonClicked(selectedAssignment: Assignment) {
@@ -83,7 +83,7 @@ export class AssignmentComponent {
       completionPercent: selectedAssignment.completionPercent,
       projectId: selectedAssignment.projectId,
       assigneeId: selectedAssignment.assigneeId
-    })
+    });
   }
 
   onSubmit(submittedAssignment: Assignment) {
@@ -118,7 +118,7 @@ export class AssignmentComponent {
 
   onInfoButtonClicked(selectedAssignment: Assignment) {
     this.currentSelectedAssignment = selectedAssignment;
-    this.infoModal.show()
+    this.infoModal.show();
   }
 
   onDeleteButtonClicked(selectedAssignment: Assignment) {

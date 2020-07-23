@@ -1,7 +1,7 @@
-﻿using DAL.Interfaces;
-using DAL.Repositories;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using DAL.Interfaces;
+using DAL.Repositories;
 
 namespace DAL
 {

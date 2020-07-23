@@ -3,10 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BLL
 {
-    class DeadlineAttribute : ValidationAttribute
+    internal class DeadlineAttribute : ValidationAttribute
     {
-        public string GetErrorMessage() => "The deadline must be a date after today's date.";
-
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             var deadlineDate = ((DateTime)value).Date;
@@ -17,6 +15,11 @@ namespace BLL
             }
 
             return ValidationResult.Success;
+        }
+
+        private static string GetErrorMessage()
+        {
+            return "The deadline must be a date after today's date.";
         }
     }
 }

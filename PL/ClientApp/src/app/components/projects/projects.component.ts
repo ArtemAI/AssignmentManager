@@ -47,9 +47,9 @@ export class ProjectComponent {
         return projects.map(project => {
           project.manager = users.find(user => user.id === project.managerId);
           return project;
-        })
+        });
       }
-    )
+    );
 
     combinedProjects$.subscribe(result => {
       this.projectList = result;
@@ -57,7 +57,7 @@ export class ProjectComponent {
   }
 
   onCreateButtonClicked() {
-    this.createModal.show()
+    this.createModal.show();
   }
 
   onEditButtonClicked(selectedProject: Project) {
@@ -98,7 +98,7 @@ export class ProjectComponent {
 
   onInfoButtonClicked(selectedProject: Project) {
     this.currentSelectedProject = selectedProject;
-    this.infoModal.show()
+    this.infoModal.show();
   }
 
   onDeleteButtonClicked(selectedProject: Project) {

@@ -7,7 +7,7 @@ namespace DAL.Configuration
     /// <summary>
     /// Performs configuration of the Project entity.
     /// </summary>
-    class ProjectEntityConfiguration : IEntityTypeConfiguration<Project>
+    internal class ProjectEntityConfiguration : IEntityTypeConfiguration<Project>
     {
         public void Configure(EntityTypeBuilder<Project> builder)
         {

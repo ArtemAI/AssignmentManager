@@ -1,3 +1,7 @@
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Text;
 using BLL.Configuration;
 using BLL.Extensions;
 using BLL.Interfaces;
@@ -16,10 +20,6 @@ using Microsoft.IdentityModel.Tokens;
 using PL.Extensions;
 using PL.Identity;
 using PL.Models;
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Text;
 
 namespace PL
 {
@@ -66,7 +66,8 @@ namespace PL
                 .Get<JwtConfiguration>());
 
             services.AddDbContext<ApplicationUsersContext>();
-            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>{
+            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+                {
                     options.Password.RequireDigit = false;
                     options.Password.RequireLowercase = false;
                     options.Password.RequireNonAlphanumeric = false;
@@ -76,7 +77,7 @@ namespace PL
                 .AddDefaultTokenProviders();
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            services.AddAuthentication(options => 
+            services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -90,13 +91,16 @@ namespace PL
                     {
                         ValidIssuer = Configuration["JwtConfiguration:Issuer"],
                         ValidAudience = Configuration["JwtConfiguration:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtConfiguration:SecretKey"])),
+                        IssuerSigningKey =
+                            new SymmetricSecurityKey(
+                                Encoding.UTF8.GetBytes(Configuration["JwtConfiguration:SecretKey"])),
                         ClockSkew = TimeSpan.Zero
                     };
                 });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<ApplicationUser> userManager,
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
+            UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager)
         {
             if (env.IsDevelopment())
@@ -128,7 +132,7 @@ namespace PL
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
-                spa.UseAngularCliServer(npmScript: "start");
+                spa.UseAngularCliServer("start");
             });
         }
     }

@@ -1,11 +1,11 @@
-﻿using BLL.Interfaces;
-using BLL.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using BLL.Interfaces;
+using BLL.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PL.Models;
 
 namespace PL.Controllers
@@ -39,6 +39,7 @@ namespace PL.Controllers
             {
                 return Ok(await _assignmentService.GetAllAssignmentsAsync());
             }
+
             if (User.IsInRole("Manager"))
             {
                 var currentUser = await _userProfileService.GetUserByIdAsync(currentUserId);
@@ -61,8 +62,7 @@ namespace PL.Controllers
             {
                 return NotFound(new ErrorDetails
                 {
-                    StatusCode = 404,
-                    Message = "Could not find assignment with provided ID."
+                    StatusCode = 404, Message = "Could not find assignment with provided ID."
                 });
             }
 
@@ -74,23 +74,21 @@ namespace PL.Controllers
         {
             AssignmentDto createdAssignment = await _assignmentService.CreateAssignmentAsync(assignment);
 
-            return CreatedAtRoute("GetAssignment", new { assignmentId = createdAssignment.Id }, createdAssignment);
+            return CreatedAtRoute("GetAssignment", 
+                new {assignmentId = createdAssignment.Id}, createdAssignment);
         }
 
         [HttpPut("{assignmentId}")]
         public async Task<ActionResult> UpdateAssignmentAsync(Guid assignmentId, [FromBody] AssignmentDto assignment)
         {
-            AssignmentDto existingAssignment = await _assignmentService.GetAssignmentByIdAsync(assignmentId);
-            if (existingAssignment == null)
+            var result = await _assignmentService.UpdateAssignmentAsync(assignment);
+            if (!result)
             {
                 return NotFound(new ErrorDetails
                 {
-                    StatusCode = 404,
-                    Message = "Could not find assignment with provided ID."
+                    StatusCode = 404, Message = "Could not find assignment with provided ID."
                 });
             }
-
-            await _assignmentService.UpdateAssignmentAsync(assignment);
 
             return NoContent();
         }
@@ -98,16 +96,14 @@ namespace PL.Controllers
         [HttpDelete("{assignmentId}")]
         public async Task<ActionResult> DeleteAssignmentAsync(Guid assignmentId)
         {
-            if (await _assignmentService.GetAssignmentByIdAsync(assignmentId) == null)
+            var result = await _assignmentService.RemoveAssignmentAsync(assignmentId);
+            if (!result)
             {
                 return NotFound(new ErrorDetails
                 {
-                    StatusCode = 404,
-                    Message = "Could not find assignment with provided ID."
+                    StatusCode = 404, Message = "Could not find assignment with provided ID."
                 });
             }
-
-            await _assignmentService.RemoveAssignmentAsync(assignmentId);
 
             return NoContent();
         }

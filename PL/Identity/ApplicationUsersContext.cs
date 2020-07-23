@@ -1,8 +1,8 @@
-﻿using BLL.Models;
+﻿using System;
+using BLL.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
 
 namespace PL.Identity
 {

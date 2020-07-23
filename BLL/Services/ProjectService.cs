@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoMapper;
 using BLL.Interfaces;
 using BLL.Models;
 using DAL.Entities;
 using DAL.Interfaces;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace BLL.Services
 {
@@ -14,8 +14,8 @@ namespace BLL.Services
     /// </summary>
     public class ProjectService : IProjectService
     {
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
         public ProjectService(IUnitOfWork unitOfWork, IMapper mapper)
         {
@@ -32,18 +32,30 @@ namespace BLL.Services
             return _mapper.Map<ProjectDto>(createdProject);
         }
 
-        public async Task UpdateProjectAsync(ProjectDto project)
+        public async Task<bool> UpdateProjectAsync(ProjectDto project)
         {
-            Project mappedProject = _mapper.Map<Project>(project);
-            _unitOfWork.Projects.UpdateProject(mappedProject);
+            if (await _unitOfWork.Projects.GetProjectByIdAsync((Guid)project.Id) == null)
+            {
+                return false;
+            }
+
+            var projectToUpdate = _mapper.Map<Project>(project);
+            _unitOfWork.Projects.UpdateProject(projectToUpdate);
             await _unitOfWork.SaveAsync();
+            return true;
         }
 
-        public async Task RemoveProjectAsync(Guid projectId)
+        public async Task<bool> RemoveProjectAsync(Guid projectId)
         {
-            Project project = await _unitOfWork.Projects.GetProjectByIdAsync(projectId);
-            _unitOfWork.Projects.RemoveProject(project);
+            var projectToRemove = await _unitOfWork.Projects.GetProjectByIdAsync(projectId);
+            if (projectToRemove == null)
+            {
+                return false;
+            }
+
+            _unitOfWork.Projects.RemoveProject(projectToRemove);
             await _unitOfWork.SaveAsync();
+            return true;
         }
 
         public async Task<IEnumerable<ProjectDto>> GetAllProjectsAsync()
@@ -74,6 +86,7 @@ namespace BLL.Services
             {
                 return false;
             }
+
             project.ManagerId = userId;
             user.ProjectId = projectId;
             _unitOfWork.Projects.UpdateProject(project);
@@ -89,13 +102,14 @@ namespace BLL.Services
             {
                 return null;
             }
+
             UserProfile user = await _unitOfWork.UserProfiles.GetUserProfileByIdAsync((Guid)project.ManagerId);
             return _mapper.Map<UserProfileDto>(user);
         }
 
         #region IDisposable Support
 
-        private bool _disposedValue = false;
+        private bool _disposedValue;
 
         protected virtual void Dispose(bool disposing)
         {

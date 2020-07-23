@@ -7,7 +7,7 @@ namespace BLL
     /// <summary>
     /// Provides a set of mapping configurations for AutoMapper.
     /// </summary>
-    class AutoMappingProfile : Profile
+    internal class AutoMappingProfile : Profile
     {
         public AutoMappingProfile()
         {

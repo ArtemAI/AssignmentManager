@@ -1,8 +1,8 @@
-﻿using AutoMapper;
+﻿using System.Reflection;
+using AutoMapper;
 using DAL;
 using DAL.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace BLL.Extensions
 {

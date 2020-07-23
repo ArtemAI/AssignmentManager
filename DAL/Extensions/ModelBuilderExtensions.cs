@@ -7,18 +7,18 @@ namespace DAL.Extensions
     /// <summary>
     /// Performs database seeding with test data.
     /// </summary>
-    static class ModelBuilderExtensions
+    internal static class ModelBuilderExtensions
     {
         public static void Seed(this ModelBuilder modelBuilder)
         {
-            Guid[] projectIds = new Guid[]
+            var projectIds = new[]
             {
                 Guid.Parse("3F866896-C858-4B0F-9BF3-3FA3DCA36827"),
                 Guid.Parse("529B493E-D3E6-4065-8ED7-4E3A8A7DF238"),
                 Guid.Parse("3F35412D-1A07-4333-AE60-1FCD642CAC61")
             };
 
-            Guid[] userIds = new Guid[]
+            var userIds = new[]
             {
                 Guid.Parse("33293875-AB05-495D-8883-8C23BFB66C2C"),
                 Guid.Parse("546C8C7C-4A94-464B-8CC7-FFFB35BB0D29"),
@@ -26,7 +26,7 @@ namespace DAL.Extensions
                 Guid.Parse("07D28657-02A1-47AD-BE2F-7D0E0B4E45B1")
             };
 
-            Guid[] assignmentIds = new Guid[]
+            var assignmentIds = new[]
             {
                 Guid.Parse("E6EFE661-925A-40DD-9EA8-C194170E35EF"),
                 Guid.Parse("A5AE9821-FD63-447D-8210-C01451CE9EF7"),
@@ -53,14 +53,16 @@ namespace DAL.Extensions
                     LastName = "Bogdanov",
                     ProjectId = projectIds[1],
                     AllowEmailNotifications = true
-                }, new UserProfile
+                },
+                new UserProfile
                 {
                     Id = userIds[2],
                     FirstName = "Artem",
                     LastName = "Chepak",
                     ProjectId = projectIds[1],
                     AllowEmailNotifications = true
-                }, new UserProfile
+                },
+                new UserProfile
                 {
                     Id = userIds[3],
                     FirstName = "Sergey",
@@ -85,9 +87,7 @@ namespace DAL.Extensions
                 },
                 new Project
                 {
-                    Id = projectIds[2],
-                    Name = "Project C",
-                    Description = "Large project with big development team."
+                    Id = projectIds[2], Name = "Project C", Description = "Large project with big development team."
                 }
             );
 
