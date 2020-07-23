@@ -49,9 +49,7 @@ export class ProjectComponent {
           return project;
         });
       }
-    );
-
-    combinedProjects$.subscribe(result => {
+    ).subscribe(result => {
       this.projectList = result;
     });
   }
