@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BLL
 {
+    /// <summary>
+    /// Performs validation of provided assignment deadline value.
+    /// </summary>
     internal class DeadlineAttribute : ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)

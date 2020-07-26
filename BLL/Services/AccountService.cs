@@ -37,7 +37,7 @@ namespace BLL.Services
         }
 
         /// <summary>
-        /// Performs a user login operation.
+        /// Performs user's login operation.
         /// </summary>
         /// <param name="username">User's name.</param>
         /// <param name="password">User's password.</param>
@@ -55,7 +55,7 @@ namespace BLL.Services
         }
 
         /// <summary>
-        /// Performs registration operation. Identity and domain data are being saved separately.
+        /// Performs user's registration. Identity and domain data are being saved separately.
         /// </summary>
         /// <param name="user">Registered user.</param>
         /// <returns>An application user's record or null if registration was not successful.</returns>
@@ -84,7 +84,7 @@ namespace BLL.Services
         /// Performs generation of JWT that grants to user some permissions, based on his role.
         /// </summary>
         /// <param name="user">An application user's record.</param>
-        /// <returns>JSON Web Token object.</returns>
+        /// <returns>JSON Web Token string.</returns>
         public async Task<string> GenerateJwt(ApplicationUser user)
         {
             var claims = new List<Claim>

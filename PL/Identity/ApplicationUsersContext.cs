@@ -6,6 +6,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace PL.Identity
 {
+    /// <summary>
+    /// Enables to perform CRUD operations and saving of Identity entities.
+    /// </summary>
     public class ApplicationUsersContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

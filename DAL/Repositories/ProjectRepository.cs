@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DAL.Repositories
 {
     /// <summary>
-    /// Repository pattern implementation that allows to perform CRUD operations and select Project records.
+    /// Repository pattern implementation that allows to perform CRUD operations and query Project records.
     /// </summary>
     internal class ProjectRepository : IProjectRepository
     {

@@ -9,10 +9,11 @@ namespace BLL.Interfaces
     {
         Task<UserProfileDto> CreateUserProfileAsync(UserProfileDto userProfile);
         Task<bool> UpdateUserAsync(UserProfileDto userProfile);
-
         Task<UserProfileDto> GetUserByIdAsync(Guid userProfileId);
-        Task<IEnumerable<UserProfileDto>> GetUserByProjectIdAsync(Guid projectId);
         Task<IEnumerable<UserProfileDto>> GetAllUsersAsync();
-        Task<bool> SetUserRole(Guid userId, string role);
+        Task<bool> AddUserToProject(Guid userId, Guid projectId);
+        Task<bool> RemoveUserFromProject(Guid userId);
+        Task<bool> SetUserRoleAsync(Guid userId, string role);
+        Task<List<string>> GetAllRoleNamesAsync();
     }
 }

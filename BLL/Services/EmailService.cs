@@ -20,13 +20,17 @@ namespace BLL.Services
             _emailConfiguration = emailConfiguration;
         }
 
+        /// <summary>
+        /// Performs sending of provided email message.
+        /// </summary>
+        /// <param name="emailMessage">Email message to be sent.</param>
         public async Task Send(EmailMessage emailMessage)
         {
             var message = new MimeMessage();
             message.To.AddRange(emailMessage.ToAddresses.Select(x => new MailboxAddress(x.Name, x.Address)));
             message.From.Add(new MailboxAddress(_emailConfiguration.SenderName, _emailConfiguration.SmtpUsername));
             message.Subject = emailMessage.Subject;
-            message.Body = new TextPart(TextFormat.Plain) {Text = emailMessage.Content};
+            message.Body = new TextPart(TextFormat.Plain) { Text = emailMessage.Content };
 
             using var emailClient = new SmtpClient();
             await emailClient.ConnectAsync(_emailConfiguration.SmtpServer, _emailConfiguration.SmtpPort, true);

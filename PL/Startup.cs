@@ -2,6 +2,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
+using BLL;
 using BLL.Configuration;
 using BLL.Extensions;
 using BLL.Interfaces;
@@ -18,8 +19,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using PL.Extensions;
+using PL.Filters;
 using PL.Identity;
-using PL.Models;
 
 namespace PL
 {
@@ -39,31 +40,35 @@ namespace PL
             {
                 options.InvalidModelStateResponseFactory = context =>
                 {
-                    object responseObject = new ErrorDetails
-                    {
-                        StatusCode = 400,
-                        Message = context.ModelState
+                    object responseObject = context.ModelState
                             .Select(entry => entry.Value.Errors.Select(error => error.ErrorMessage))
                             .Aggregate(Enumerable.Empty<string>(), (agg, val) => agg.Concat(val))
-                            .FirstOrDefault()
-                    };
+                            .FirstOrDefault();
                     return new BadRequestObjectResult(responseObject);
                 };
             });
+
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+
             services.AddBll();
             services.AddTransient<IProjectService, ProjectService>();
             services.AddTransient<IAssignmentService, AssignmentService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IEmailService, EmailService>();
+            services.AddScoped<SessionProvider>();
             services.AddSingleton<IEmailConfiguration>(Configuration.GetSection("EmailConfiguration")
                 .Get<EmailConfiguration>());
             services.AddSingleton<IJwtConfiguration>(Configuration.GetSection("JwtConfiguration")
                 .Get<JwtConfiguration>());
+
+            services.AddMvc(options =>
+            {
+                options.Filters.Add<SessionFilter>();
+            });
 
             services.AddDbContext<ApplicationUsersContext>();
             services.AddIdentity<ApplicationUser, ApplicationRole>(options =>

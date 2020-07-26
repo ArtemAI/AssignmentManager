@@ -7,6 +7,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace DAL
 {
+    /// <summary>
+    /// Enables to perform CRUD operations and saving of available entities.
+    /// </summary>
     public class AssignmentManagerContext : DbContext
     {
         public DbSet<Project> Projects { get; set; }

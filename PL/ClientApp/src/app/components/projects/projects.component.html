@@ -1,6 +1,6 @@
 <div class="animated fadeIn">
   <div class="row">
-    <div class="mx-auto" *ngIf="userList?.length == 0">
+    <div class="mx-auto" *ngIf="projectList?.length == 0">
       <p class="font-weight-light text-info">You are not connected to any project yet.</p>
     </div>
     <table class="table table-hover" *ngIf="projectList?.length > 0">
@@ -21,17 +21,23 @@
             <button type="button" (click)="onInfoButtonClicked(project)" class="btn btn-sm btn-primary mr-1">
               <fa-icon [icon]="infoIcon"></fa-icon>&nbsp;Info
             </button>
-            <button type="button" (click)="onEditButtonClicked(project)" class="btn btn-sm btn-primary mr-1">
+            <button *ngIf="canCurrentUserChangeProject()" type="button" (click)="onEditButtonClicked(project)"
+              class="btn btn-sm btn-primary mr-1">
               <fa-icon [icon]="pencilIcon"></fa-icon>&nbsp;Edit
             </button>
-            <button type="button" (click)="onDeleteButtonClicked(project)" class="btn btn-sm btn-primary mr-1">
+            <button *ngIf="canCurrentUserChangeProject()" type="button" (click)="onDeleteButtonClicked(project)"
+              class="btn btn-sm btn-primary mr-1">
               <fa-icon [icon]="trashIcon"></fa-icon>&nbsp;Delete
+            </button>
+            <button type="button" *ngIf="currentUserRoleName == 'Employee'" (click)="onLeaveButtonClicked(project)"
+              class="btn btn-sm btn-primary mr-1">
+              <fa-icon [icon]="leaveIcon"></fa-icon>&nbsp;Leave
             </button>
           </td>
         </tr>
       </tbody>
     </table>
-    <div>
+    <div *ngIf="projectList?.length == 0">
       <button type="button" (click)="onCreateButtonClicked()" class="btn btn-sm btn-success">New project</button>
     </div>
   </div>

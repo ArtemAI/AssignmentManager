@@ -19,25 +19,32 @@ namespace BLL.Services
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly Session _session;
 
-        public AssignmentService(UserManager<ApplicationUser> userManager, IEmailService emailService,
-            IUnitOfWork unitOfWork, IMapper mapper)
+        public AssignmentService(IEmailService emailService, IUnitOfWork unitOfWork, IMapper mapper,
+            UserManager<ApplicationUser> userManager, SessionProvider sessionProvider)
         {
-            _userManager = userManager;
             _emailService = emailService;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userManager = userManager;
+            _session = sessionProvider.Session;
         }
 
+        /// <summary>
+        /// Creates new assignment and informs assignee with email.
+        /// </summary>
+        /// <param name="assignment">Assignment to be added.</param>
+        /// <returns>Created assignment DTO.</returns>
         public async Task<AssignmentDto> CreateAssignmentAsync(AssignmentDto assignment)
         {
-            UserProfile assignee = await _unitOfWork.UserProfiles.GetUserProfileByIdAsync(assignment.AssigneeId);
-            if (assignee.AllowEmailNotifications)
+            UserProfile assigneeUser = await _unitOfWork.UserProfiles.GetUserProfileByIdAsync(assignment.AssigneeId);
+            if (assigneeUser.AllowEmailNotifications)
             {
-                var assigneeUser = await _userManager.FindByIdAsync(assignee.Id.ToString());
+                ApplicationUser assigneeUserProfile = await _userManager.FindByIdAsync(assigneeUser.Id.ToString());
                 var recipientAddress = new EmailAddress
                 {
-                    Address = assigneeUser.Email, Name = $"{assignee.FirstName} {assignee.LastName}"
+                    Address = assigneeUserProfile.Email, Name = $"{assigneeUser.FirstName} {assigneeUser.LastName}"
                 };
                 var infoMessage = new EmailMessage
                 {
@@ -57,12 +64,12 @@ namespace BLL.Services
 
         public async Task<bool> UpdateAssignmentAsync(AssignmentDto assignment)
         {
-            if (await _unitOfWork.Assignments.GetAssignmentByIdAsync((Guid)assignment.Id) == null)
+            if (await _unitOfWork.Assignments.GetAssignmentByIdAsync(assignment.Id.Value) == null)
             {
                 return false;
             }
 
-            var assignmentToUpdate = _mapper.Map<Assignment>(assignment);
+            Assignment assignmentToUpdate = _mapper.Map<Assignment>(assignment);
             _unitOfWork.Assignments.UpdateAssignment(assignmentToUpdate);
             await _unitOfWork.SaveAsync();
             return true;
@@ -70,7 +77,7 @@ namespace BLL.Services
 
         public async Task<bool> RemoveAssignmentAsync(Guid assignmentId)
         {
-            var assignmentToRemove = await _unitOfWork.Assignments.GetAssignmentByIdAsync(assignmentId);
+            Assignment assignmentToRemove = await _unitOfWork.Assignments.GetAssignmentByIdAsync(assignmentId);
             if (assignmentToRemove == null)
             {
                 return false;
@@ -87,23 +94,38 @@ namespace BLL.Services
             return _mapper.Map<AssignmentDto>(assignment);
         }
 
-        public async Task<IEnumerable<AssignmentDto>> GetAssignmentByUserIdAsync(Guid userId)
-        {
-            IEnumerable<Assignment> userAssignments = await _unitOfWork.Assignments.GetAssignmentsByUserIdAsync(userId);
-            return _mapper.Map<IEnumerable<AssignmentDto>>(userAssignments);
-        }
-
-        public async Task<IEnumerable<AssignmentDto>> GetAssignmentByProjectIdAsync(Guid projectId)
-        {
-            IEnumerable<Assignment> projectAssignments =
-                await _unitOfWork.Assignments.GetAssignmentsByProjectIdAsync(projectId);
-            return _mapper.Map<IEnumerable<AssignmentDto>>(projectAssignments);
-        }
-
+        /// <summary>
+        /// Gets the list of assignments based on current user's role.
+        /// </summary>
+        /// <returns>Sequence of assignments.</returns>
         public async Task<IEnumerable<AssignmentDto>> GetAllAssignmentsAsync()
         {
-            IEnumerable<Assignment> assignments = await _unitOfWork.Assignments.GetAllAssignmentAsync();
-            return _mapper.Map<IEnumerable<AssignmentDto>>(assignments);
+            ApplicationUser currentUser = _session.User;
+            if (await _userManager.IsInRoleAsync(currentUser, "Administrator"))
+            {
+                var assignments = await _unitOfWork.Assignments.GetAllAssignmentAsync();
+                return _mapper.Map<List<AssignmentDto>>(assignments);
+            }
+
+            var assignmentList = new List<AssignmentDto>();
+            var currentUserProfile = await _unitOfWork.UserProfiles.GetUserProfileByIdAsync(currentUser.Id);
+            if (currentUserProfile.ProjectId.HasValue)
+            {
+                if (await _userManager.IsInRoleAsync(currentUser, "Manager"))
+                {
+                    var projectAssignments =
+                        await _unitOfWork.Assignments.GetAssignmentsByProjectIdAsync(currentUserProfile.ProjectId.Value);
+                    assignmentList = _mapper.Map<List<AssignmentDto>>(projectAssignments);
+                }
+                else
+                {
+                    var userAssignments = 
+                        await _unitOfWork.Assignments.GetAssignmentsByUserIdAsync(currentUser.Id);
+                    assignmentList = _mapper.Map<List<AssignmentDto>>(userAssignments);
+                }
+            }
+            
+            return assignmentList;
         }
 
         #region IDisposable Support

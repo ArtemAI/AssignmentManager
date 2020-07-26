@@ -8,13 +8,11 @@ namespace BLL.Interfaces
 {
     public interface IProjectService : IDisposable
     {
-        Task<ProjectDto> CreateProjectAsync(ProjectDto project, Guid userId);
+        Task<ProjectDto> CreateProjectAsync(ProjectDto project);
         Task<bool> UpdateProjectAsync(ProjectDto project);
         Task<bool> RemoveProjectAsync(Guid projectId);
-
         Task<ProjectDto> GetProjectByIdAsync(Guid projectId);
         Task<IEnumerable<ProjectDto>> GetAllProjectsAsync();
-        Task<bool> SetProjectManagerById(Guid projectId, Guid userId, Project createdProject = null);
-        Task<UserProfileDto> GetProjectManagerById(Guid projectId);
+        Task<bool> SetProjectManagerAsync(Guid projectId, Guid userId, Project createdProject = null);
     }
 }

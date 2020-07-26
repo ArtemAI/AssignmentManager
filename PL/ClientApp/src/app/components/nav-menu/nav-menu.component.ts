@@ -24,6 +24,5 @@ export class NavMenuComponent {
 
   logUserOut() {
     this.authService.logout();
-    this.router.navigateByUrl('/');
   }
 }

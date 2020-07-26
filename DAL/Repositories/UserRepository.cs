@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DAL.Repositories
 {
     /// <summary>
-    /// Repository pattern implementation that allows to perform CRUD operations and select UserProfile records.
+    /// Repository pattern implementation that allows to perform CRUD operations and query UserProfile records.
     /// </summary>
     internal class UserRepository : IUserRepository
     {
@@ -40,7 +40,7 @@ namespace DAL.Repositories
                 .FirstOrDefaultAsync(x => x.Id == userProfileId);
         }
 
-        public async Task<IEnumerable<UserProfile>> GetUserProfileByProjectIdAsync(Guid projectId)
+        public async Task<IEnumerable<UserProfile>> GetUserProfilesByProjectIdAsync(Guid projectId)
         {
             return await _dbSet
                 .AsNoTracking()

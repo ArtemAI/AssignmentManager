@@ -11,7 +11,7 @@ namespace DAL.Interfaces
         void UpdateUserProfile(UserProfile item);
 
         Task<UserProfile> GetUserProfileByIdAsync(Guid userProfileId);
-        Task<IEnumerable<UserProfile>> GetUserProfileByProjectIdAsync(Guid projectId);
+        Task<IEnumerable<UserProfile>> GetUserProfilesByProjectIdAsync(Guid projectId);
         Task<IEnumerable<UserProfile>> GetAllUserProfilesAsync();
     }
 }

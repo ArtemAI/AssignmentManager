@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using BLL.Interfaces;
 using BLL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PL.Models;
 
 namespace PL.Controllers
 {
@@ -19,54 +17,10 @@ namespace PL.Controllers
     public class AssignmentsController : ControllerBase
     {
         private readonly IAssignmentService _assignmentService;
-        private readonly IUserService _userProfileService;
 
-        public AssignmentsController(IAssignmentService assignmentService, IUserService userProfileService)
+        public AssignmentsController(IAssignmentService assignmentService)
         {
             _assignmentService = assignmentService;
-            _userProfileService = userProfileService;
-        }
-
-        /// <summary>
-        /// Gets the list of assignments based on current user's role.
-        /// </summary>
-        /// <returns>List of assignments.</returns>
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<AssignmentDto>>> GetAllAssignmentsAsync()
-        {
-            var currentUserId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            if (User.IsInRole("Administrator"))
-            {
-                return Ok(await _assignmentService.GetAllAssignmentsAsync());
-            }
-
-            if (User.IsInRole("Manager"))
-            {
-                var currentUser = await _userProfileService.GetUserByIdAsync(currentUserId);
-                return Ok(await _assignmentService.GetAssignmentByProjectIdAsync(currentUser.ProjectId));
-            }
-
-            return Ok(await _assignmentService.GetAssignmentByUserIdAsync(currentUserId));
-        }
-
-        /// <summary>
-        /// Gets an assignment by ID.
-        /// </summary>
-        /// <param name="assignmentId">An assignment identifier in the form of a GUID string.</param>
-        /// <returns>An assignment record or null if assignment was not found.</returns>
-        [HttpGet("{assignmentId}", Name = "GetAssignment")]
-        public async Task<ActionResult<AssignmentDto>> GetAssignmentByIdAsync(Guid assignmentId)
-        {
-            AssignmentDto assignment = await _assignmentService.GetAssignmentByIdAsync(assignmentId);
-            if (assignment == null)
-            {
-                return NotFound(new ErrorDetails
-                {
-                    StatusCode = 404, Message = "Could not find assignment with provided ID."
-                });
-            }
-
-            return Ok(assignment);
         }
 
         [HttpPost]
@@ -81,13 +35,15 @@ namespace PL.Controllers
         [HttpPut("{assignmentId}")]
         public async Task<ActionResult> UpdateAssignmentAsync(Guid assignmentId, [FromBody] AssignmentDto assignment)
         {
+            if (assignmentId != assignment.Id)
+            {
+                return BadRequest("Specified assignment ID is invalid.");
+            }
+
             var result = await _assignmentService.UpdateAssignmentAsync(assignment);
             if (!result)
             {
-                return NotFound(new ErrorDetails
-                {
-                    StatusCode = 404, Message = "Could not find assignment with provided ID."
-                });
+                return NotFound("Could not find assignment with provided ID.");
             }
 
             return NoContent();
@@ -99,13 +55,28 @@ namespace PL.Controllers
             var result = await _assignmentService.RemoveAssignmentAsync(assignmentId);
             if (!result)
             {
-                return NotFound(new ErrorDetails
-                {
-                    StatusCode = 404, Message = "Could not find assignment with provided ID."
-                });
+                return NotFound("Could not find assignment with provided ID.");
             }
 
             return NoContent();
+        }
+
+        [HttpGet("{assignmentId}", Name = "GetAssignment")]
+        public async Task<ActionResult<AssignmentDto>> GetAssignmentByIdAsync(Guid assignmentId)
+        {
+            AssignmentDto assignment = await _assignmentService.GetAssignmentByIdAsync(assignmentId);
+            if (assignment == null)
+            {
+                return NotFound("Could not find assignment with provided ID.");
+            }
+
+            return Ok(assignment);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<AssignmentDto>>> GetAllAssignmentsAsync()
+        {
+            return Ok(await _assignmentService.GetAllAssignmentsAsync());
         }
     }
 }

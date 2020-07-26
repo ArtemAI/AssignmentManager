@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using BLL.Interfaces;
 using BLL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PL.Models;
+using Newtonsoft.Json;
 
 namespace PL.Controllers
 {
@@ -18,77 +17,102 @@ namespace PL.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUserService _userProfileService;
+        private readonly IUserService _userService;
 
         public UsersController(IUserService userService)
         {
-            _userProfileService = userService;
-        }
-
-        /// <summary>
-        /// Gets the list of user profiles based on current user's role.
-        /// </summary>
-        /// <returns>List of user profiles.</returns>
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserProfileDto>>> GetAllUsersAsync()
-        {
-            if (User.IsInRole("Administrator"))
-            {
-                return Ok(await _userProfileService.GetAllUsersAsync());
-            }
-
-            var currentUserId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var currentUser = await _userProfileService.GetUserByIdAsync(currentUserId);
-
-            return Ok(await _userProfileService.GetUserByProjectIdAsync(currentUser.ProjectId));
-        }
-
-        /// <summary>
-        /// Gets a user's profile by ID.
-        /// </summary>
-        /// <param name="userId">A user identifier in the form of a GUID string.</param>
-        /// <returns>A user record or null if user was not found.</returns>
-        [HttpGet("{userId}", Name = "GetUser")]
-        public async Task<ActionResult<UserProfileDto>> GetUserByIdAsync(Guid userId)
-        {
-            UserProfileDto user = await _userProfileService.GetUserByIdAsync(userId);
-            if (user == null)
-            {
-                return NotFound(new ErrorDetails {StatusCode = 404, Message = "Could not find user with provided ID."});
-            }
-
-            return Ok(user);
+            _userService = userService;
         }
 
         [HttpPost]
         public async Task<ActionResult> CreateUserAsync([FromBody] UserProfileDto user)
         {
-            UserProfileDto createdUser = await _userProfileService.CreateUserProfileAsync(user);
+            UserProfileDto createdUser = await _userService.CreateUserProfileAsync(user);
             return CreatedAtRoute("GetUser", new {userId = createdUser.Id}, createdUser);
         }
 
         [HttpPut("{userId}")]
         public async Task<ActionResult> UpdateUserAsync(Guid userId, [FromBody] UserProfileDto user)
         {
-            var result = await _userProfileService.UpdateUserAsync(user);
+            if(userId != user.Id)
+            {
+                return BadRequest("Specified user ID is invalid.");
+            }
+
+            var result = await _userService.UpdateUserAsync(user);
             if (!result)
             {
-                return NotFound(new ErrorDetails {StatusCode = 404, Message = "Could not find user with provided ID."});
+                return NotFound("Could not find user with provided ID.");
             }
 
             return NoContent();
         }
 
-        [HttpPut("{userId}/role")]
-        public async Task<ActionResult> SetUserRole(Guid userId, string role)
+        [HttpGet("{userId}", Name = "GetUser")]
+        public async Task<ActionResult<UserProfileDto>> GetUserByIdAsync(Guid userId)
         {
-            UserProfileDto existingUser = await _userProfileService.GetUserByIdAsync(userId);
-            if (existingUser == null)
+            UserProfileDto user = await _userService.GetUserByIdAsync(userId);
+            if (user == null)
             {
-                return NotFound(new ErrorDetails {StatusCode = 404, Message = "Could not find user with provided ID."});
+                return NotFound("Could not find user with provided ID.");
             }
 
-            await _userProfileService.SetUserRole(userId, role);
+            return Ok(user);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<UserProfileDto>>> GetAllUsersAsync()
+        {
+            return Ok(await _userService.GetAllUsersAsync());
+        }
+
+        [HttpGet("roles")]
+        [Authorize(Roles = "Manager,Administrator")]
+        public async Task<ActionResult> GetAllRoleNames()
+        {
+            return Ok(await _userService.GetAllRoleNamesAsync());
+        }
+
+        /// <summary>
+        /// Sets a role of specified user. 
+        /// </summary>
+        /// <param name="userId">A user identifier in the form of a GUID string.</param>
+        /// <param name="jsonRole">JSON object that contains name of new role.</param>
+        /// <returns>HTTP status code 204 if operation is successful, error response otherwise.</returns>
+        [HttpPut("{userId}/role")]
+        [Authorize(Roles = "Manager,Administrator")]
+        public async Task<ActionResult> SetUserRole(Guid userId, [FromBody] object jsonRole)
+        {
+            var roleDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonRole.ToString());
+            var result = await _userService.SetUserRoleAsync(userId, roleDictionary["role"]);
+            if(!result)
+            {
+                return BadRequest("Could not set a role of specified user.");
+            }
+
+            return NoContent();
+        }
+
+        [HttpPut("{userId}/project/{projectId}")]
+        public async Task<ActionResult> AddUserToProjectAsync(Guid userId, Guid projectId)
+        {
+            var result = await _userService.AddUserToProject(userId, projectId);
+            if (!result)
+            {
+                return BadRequest("Could not add user to project with provided ID.");
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{userId}/project")]
+        public async Task<ActionResult> RemoveUserFromProjectAsync(Guid userId)
+        {
+            var result = await _userService.RemoveUserFromProject(userId);
+            if (!result)
+            {
+                return BadRequest("Could not find user with provided IDs.");
+            }
 
             return NoContent();
         }

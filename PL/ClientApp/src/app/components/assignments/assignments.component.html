@@ -1,6 +1,6 @@
 <div class="animated fadeIn">
   <div class="row">
-    <div class="mx-auto" *ngIf="userList?.length == 0">
+    <div class="mx-auto" *ngIf="assignmentList?.length == 0">
       <p class="font-weight-light text-info">You don't have any assignments yet.</p>
     </div>
     <table class="table table-hover" *ngIf="assignmentList?.length > 0">
@@ -50,7 +50,7 @@
         </tr>
       </tbody>
     </table>
-    <div>
+    <div *ngIf="currentUserRoleName == 'Manager'">
       <button type="button" (click)="onCreateButtonClicked()" class="btn btn-sm btn-success">New assignment</button>
     </div>
   </div>

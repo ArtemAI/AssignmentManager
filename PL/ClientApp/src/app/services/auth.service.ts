@@ -18,7 +18,7 @@ export class AuthService {
     const formData = this.getFormDataValues(userData);
     return this.http.post<any>('/api/login', formData)
       .pipe(map(result => {
-        this.saveUserData(result.token, userData.username)
+        this.saveUserData(result.token)
         this.getLoggedInName.emit(userData.username);
       }));
   }
@@ -27,36 +27,52 @@ export class AuthService {
     const formData = this.getFormDataValues(userData);
     return this.http.post<any>('/api/register', formData)
       .pipe(map(result => {
-        this.saveUserData(result.token, userData.username);
+        this.saveUserData(result.token);
         this.getLoggedInName.emit(userData.username);
       }));
   }
 
   public logout() {
     localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    localStorage.removeItem("expires_at");
   }
 
-  public isLoggedIn() {
+  public isLoggedIn(): boolean {
     if (moment().isBefore(this.getExpiration())) {
-      const username = localStorage.getItem("username");
-      this.getLoggedInName.emit(username);
+      this.getLoggedInName.emit(this.getUserName());
       return true;
     }
     return false;
   }
 
-  private saveUserData(token: string, username: string) {
-    const expiresAt = moment().add(this.getDecodedAccessToken(token).exp, 'second');
-    localStorage.setItem('token', token);
-    localStorage.setItem("username", username);
-    localStorage.setItem('expires_at', JSON.stringify(expiresAt.valueOf()));
+  public getUserId(): string {
+    const userToken = localStorage.getItem("token");
+    let decodedToken = this.getDecodedJwt(userToken);
+    return decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+  }
+
+  public getUserRoleName(): string {
+    const userToken = localStorage.getItem("token");
+    let decodedToken = this.getDecodedJwt(userToken);
+    return decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+  }
+
+  private saveUserData(token: string) {
+    localStorage.setItem("token", token);
+  }
+
+  private getUserName() {
+    const userToken = localStorage.getItem("token");
+    let decodedToken = this.getDecodedJwt(userToken);
+    return decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
   }
 
   private getExpiration() {
-    const expiration = localStorage.getItem("expires_at");
-    const expiresAt = JSON.parse(expiration);
+    const userToken = localStorage.getItem("token");
+    let decodedToken = this.getDecodedJwt(userToken);
+    if (decodedToken == null) {
+      return null;
+    }
+    let expiresAt = moment().add(decodedToken.exp, 'second');
     return moment(expiresAt);
   }
 
@@ -68,7 +84,7 @@ export class AuthService {
     return formData;
   }
 
-  private getDecodedAccessToken(token: string): any {
+  private getDecodedJwt(token: string): any {
     try {
       return jwt_decode(token);
     }

@@ -23,7 +23,7 @@ namespace PL.Identity
                 {
                     Name = "Employee"
                 };
-                IdentityResult roleResult = roleManager.CreateAsync(role).Result;
+                roleManager.CreateAsync(role).Wait();
             }
 
             if (!roleManager.RoleExistsAsync("Manager").Result)
@@ -32,7 +32,7 @@ namespace PL.Identity
                 {
                     Name = "Manager"
                 };
-                IdentityResult roleResult = roleManager.CreateAsync(role).Result;
+                roleManager.CreateAsync(role).Wait();
             }
 
             if (!roleManager.RoleExistsAsync("Administrator").Result)
@@ -41,7 +41,7 @@ namespace PL.Identity
                 {
                     Name = "Administrator"
                 };
-                IdentityResult roleResult = roleManager.CreateAsync(role).Result;
+                roleManager.CreateAsync(role).Wait();
             }
         }
 

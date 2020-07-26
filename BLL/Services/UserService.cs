@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using BLL.Interfaces;
@@ -7,6 +8,7 @@ using BLL.Models;
 using DAL.Entities;
 using DAL.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services
 {
@@ -18,12 +20,17 @@ namespace BLL.Services
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly Session _session;
 
-        public UserService(UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, IMapper mapper)
+        public UserService(IMapper mapper, IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager,
+            RoleManager<ApplicationRole> roleManager, SessionProvider sessionProvider)
         {
-            _userManager = userManager;
-            _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _session = sessionProvider.Session;
         }
 
         public async Task<UserProfileDto> CreateUserProfileAsync(UserProfileDto user)
@@ -53,29 +60,135 @@ namespace BLL.Services
             return _mapper.Map<UserProfileDto>(user);
         }
 
-        public async Task<IEnumerable<UserProfileDto>> GetUserByProjectIdAsync(Guid projectId)
+        /// <summary>
+        /// Gets the list of user profiles based on current user's role.
+        /// </summary>
+        /// <returns>Sequence of user profiles.</returns>
+        public async Task<IEnumerable<UserProfileDto>> GetAllUsersAsync()
         {
-            IEnumerable<UserProfile> projectUserProfiles =
-                await _unitOfWork.UserProfiles.GetUserProfileByProjectIdAsync(projectId);
+            ApplicationUser currentUser = _session.User;
+            if(await _userManager.IsInRoleAsync(currentUser, "Administrator"))
+            {
+                IEnumerable<UserProfile> userProfiles = await _unitOfWork.UserProfiles.GetAllUserProfilesAsync();
+                return _mapper.Map<IEnumerable<UserProfileDto>>(userProfiles);
+            }
+
+            var currentUserProfile = await GetUserByIdAsync(currentUser.Id);
+            var projectUserProfiles =
+                await _unitOfWork.UserProfiles.GetUserProfilesByProjectIdAsync(currentUserProfile.ProjectId);
             return _mapper.Map<IEnumerable<UserProfileDto>>(projectUserProfiles);
         }
 
-        public async Task<IEnumerable<UserProfileDto>> GetAllUsersAsync()
+        /// <summary>
+        /// Adds user to selected project.
+        /// </summary>
+        /// <param name="userId">User identifier in the form of a GUID string.</param>
+        /// <param name="projectId">Project identifier in the form of a GUID string.</param>
+        /// <returns>True if operation is successful, false otherwise.</returns>
+        public async Task<bool> AddUserToProject(Guid userId, Guid projectId)
         {
-            IEnumerable<UserProfile> userProfiles = await _unitOfWork.UserProfiles.GetAllUserProfilesAsync();
-            return _mapper.Map<IEnumerable<UserProfileDto>>(userProfiles);
-        }
-
-        public async Task<bool> SetUserRole(Guid userId, string role)
-        {
-            var userToSetRole = await _userManager.FindByIdAsync(userId.ToString());
-            if (userToSetRole == null)
+            UserProfile userToUpdate = await _unitOfWork.UserProfiles.GetUserProfileByIdAsync(userId);
+            if (userToUpdate == null)
             {
                 return false;
             }
 
+            Project project = await _unitOfWork.Projects.GetProjectByIdAsync(projectId);
+            if(project == null)
+            {
+                return false;
+            }
+
+            ApplicationUser currentUser = _session.User;
+            if (await _userManager.IsInRoleAsync(currentUser, "Administrator") == false)
+            {
+                var currentUserProfile = await GetUserByIdAsync(currentUser.Id);
+                if (currentUserProfile.ProjectId != projectId)
+                {
+                    return false;
+                }
+
+                if (await _userManager.IsInRoleAsync(currentUser, "Manager") == false)
+                {
+                    return false;
+                }
+            }
+
+            userToUpdate.ProjectId = projectId;
+            _unitOfWork.UserProfiles.UpdateUserProfile(userToUpdate);
+            await _unitOfWork.SaveAsync();
+            return true;
+        }
+
+        /// <summary>
+        /// Removes user from the project.
+        /// </summary>
+        /// <param name="userId">User identifier in the form of a GUID string.</param>
+        /// <returns>True if operation is successful, false otherwise.</returns>
+        public async Task<bool> RemoveUserFromProject(Guid userId)
+        {
+            UserProfile userToUpdate = await _unitOfWork.UserProfiles.GetUserProfileByIdAsync(userId);
+            if(userToUpdate == null)
+            {
+                return false;
+            }
+
+            ApplicationUser currentUser = _session.User;
+            if (await _userManager.IsInRoleAsync(currentUser, "Administrator") == false)
+            {
+                var currentUserProfile = await GetUserByIdAsync(currentUser.Id);
+                if (currentUserProfile.ProjectId != userToUpdate.ProjectId)
+                {
+                    return false;
+                }
+
+                if (await _userManager.IsInRoleAsync(currentUser, "Manager") == false && userId != currentUser.Id)
+                {
+                    return false;
+                }
+            }
+
+            userToUpdate.ProjectId = null;
+            _unitOfWork.UserProfiles.UpdateUserProfile(userToUpdate);
+            await _unitOfWork.SaveAsync();
+            return true;
+        }
+
+        /// <summary>
+        /// Adds user to specified role.
+        /// </summary>
+        /// <param name="userId">User identifier in the form of a GUID string.</param>
+        /// <param name="role">Name of the role.</param>
+        /// <returns>True if operation is successful, false otherwise.</returns>
+        public async Task<bool> SetUserRoleAsync(Guid userId, string role)
+        {
+            ApplicationUser currentUser = _session.User;
+            if (userId == currentUser.Id)
+            {
+                return false;
+            }
+
+            if (role == "Administrator" && await _userManager.IsInRoleAsync(currentUser, "Administrator") == false)
+            {
+                return false;
+            }
+
+            ApplicationUser userToSetRole = await _userManager.FindByIdAsync(userId.ToString());
+            if (userToSetRole == null || await _roleManager.FindByNameAsync(role) == null)
+            {
+                return false;
+            }
+
+            var rolesToRemoveFrom = await _userManager.GetRolesAsync(userToSetRole);
+            await _userManager.RemoveFromRolesAsync(userToSetRole, rolesToRemoveFrom);
             await _userManager.AddToRoleAsync(userToSetRole, role);
             return true;
+        }
+
+        public Task<List<string>> GetAllRoleNamesAsync()
+        {
+            var roles = _roleManager.Roles;
+            return roles.Select(x => x.Name).ToListAsync();
         }
 
         #region IDisposable Support

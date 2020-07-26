@@ -6,6 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BLL.Extensions
 {
+    /// <summary>
+    /// Adds Unit of work and AutoMapper services to IServiceCollection.
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
         public static void AddBll(this IServiceCollection services)

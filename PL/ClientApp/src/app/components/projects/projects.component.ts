@@ -1,3 +1,4 @@
+import { AuthService } from 'src/app/services/auth.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { UserService } from './../../services/user.service';
 import { combineLatest } from 'rxjs';
@@ -5,8 +6,9 @@ import { Component, ViewChild } from '@angular/core';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 import { ProjectService } from '../../services/project.service'
 import { Project } from '../../models/project.model';
-import { faInfo, faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faInfo, faPencilAlt, faTrash, faCross } from '@fortawesome/free-solid-svg-icons';
 import { UserProfile } from 'src/app/models/user.profile.model';
+import { faTimesCircle } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
   templateUrl: 'Projects.component.html'
@@ -20,17 +22,21 @@ export class ProjectComponent {
   projectList: Project[];
   currentSelectedProject: Project;
   projectForm: FormGroup;
+  currentUserRoleName: string;
   errorMessage: string;
   infoIcon = faInfo;
   pencilIcon = faPencilAlt;
   trashIcon = faTrash;
+  leaveIcon = faTimesCircle;
 
   constructor(private projectService: ProjectService,
     private userService: UserService,
+    private authService: AuthService,
     private formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
     this.loadProjects();
+    this.currentUserRoleName = this.authService.getUserRoleName();
     this.projectForm = this.formBuilder.group({
       'id': [null],
       'name': ['', [Validators.required, Validators.maxLength(100)]],
@@ -39,11 +45,8 @@ export class ProjectComponent {
   }
 
   loadProjects() {
-    const combinedProjects$ = combineLatest(
-      this.projectService.getAll(),
-      this.userService.getAll(),
+    combineLatest(this.projectService.getAll(), this.userService.getAll(),
       (projects: Project[], users: UserProfile[]) => {
-        projects = this.transformToArray(projects);
         return projects.map(project => {
           project.manager = users.find(user => user.id === project.managerId);
           return project;
@@ -76,7 +79,7 @@ export class ProjectComponent {
           this.createModal.hide();
         },
         submitError => {
-          this.errorMessage = submitError.error.message;
+          this.errorMessage = submitError.error;
         }
       );
     }
@@ -88,7 +91,7 @@ export class ProjectComponent {
           this.createModal.hide();
         },
         submitError => {
-          this.errorMessage = submitError.error.message;
+          this.errorMessage = submitError.error;
         }
       );
     }
@@ -99,26 +102,27 @@ export class ProjectComponent {
     this.infoModal.show();
   }
 
+  onLeaveButtonClicked(selectedProject: Project) {
+    let currentUserId = this.authService.getUserId();
+    this.currentSelectedProject = selectedProject;
+    this.userService.removeFromProject(currentUserId).subscribe(() => {
+      this.projectList = this.projectList.filter(({ id }) => id !== this.currentSelectedProject.id);
+    });
+  }
+
   onDeleteButtonClicked(selectedProject: Project) {
     this.currentSelectedProject = selectedProject;
     this.deleteModal.show();
   }
 
   onDeletionConfirm() {
-    this.projectService.delete(this.currentSelectedProject.id).subscribe(response => {
+    this.projectService.delete(this.currentSelectedProject.id).subscribe(() => {
       this.projectList = this.projectList.filter(({ id }) => id !== this.currentSelectedProject.id);
       this.deleteModal.hide();
     });
   }
 
-  transformToArray(value) {
-    if (value instanceof Array) {
-      return value;
-    }
-    else {
-      var array = [];
-      array.push(value);
-      return array;
-    }
+  canCurrentUserChangeProject(): boolean {
+    return this.currentUserRoleName == 'Manager' || this.currentUserRoleName == 'Administrator';
   }
 }

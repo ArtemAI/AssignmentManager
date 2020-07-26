@@ -8,19 +8,21 @@
         <tr>
           <th>First name</th>
           <th>Last name</th>
+          <th>Project</th>
           <th>Notifications</th>
-          <th>Actions</th>
+          <th *ngIf="canCurrentUserManageUsers()">Actions</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let user of userList">
           <td>{{ user.firstName }}</td>
           <td>{{ user.lastName }}</td>
+          <td>{{ user.project?.name || 'None' }}</td>
           <td [ngSwitch]="user.allowEmailNotifications">
             <span *ngSwitchCase="false">Allowed</span>
             <span *ngSwitchCase="true">Not allowed</span>
           </td>
-          <td>
+          <td *ngIf="canCurrentUserManageUsers()">
             <button type="button" (click)="onManageButtonClicked(user)" class="btn btn-sm btn-primary">
               <fa-icon [icon]="pencilIcon"></fa-icon>&nbsp;Manage
             </button>
@@ -33,24 +35,26 @@
 <div bsModal #manageModal="bs-modal" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-info" role="document">
     <div class="modal-content">
-      <form [formGroup]="userManageForm" (ngSubmit)="onSubmit(userManageForm.value)">
+      <form [formGroup]="userManageForm" (ngSubmit)="onSubmit()">
         <div class="modal-body">
           <div class="alert alert-danger" *ngIf="this.errorMessage">
             {{ errorMessage }}
           </div>
           <div class="form-row">
             <div class="form-group col">
-              <label for="assigneeId">Username</label>
+              <label for="username">Username</label>
               <input type="text" class="form-control" formControlName="username">
             </div>
             <div class="form-group col-md-6">
-              <label for="projectId">New role</label>
-              <input type="text" class="form-control" formControlName="role">
+              <label for="role">New role</label>
+              <select class="form-control" formControlName="role">
+                <option *ngFor="let role of roleList">{{ role }}</option>
+              </select>
             </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary" [disabled]="!userManageForm.valid">Submit</button>
+          <button type="submit" class="btn btn-primary">Submit</button>
           <button type="button" class="btn btn-secondary" (click)="manageModal.hide()">Close</button>
         </div>
       </form>

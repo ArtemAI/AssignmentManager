@@ -1,3 +1,4 @@
+import { AuthService } from 'src/app/services/auth.service';
 import { UserProfile } from './../../models/user.profile.model';
 import { Component, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -23,6 +24,7 @@ export class AssignmentComponent {
   userList: UserProfile[];
   userNames: string[];
   currentUserProject: Project;
+  currentUserRoleName: string;
   currentSelectedAssignment: Assignment;
   assignmentForm: FormGroup;
   selectedUser: string;
@@ -34,12 +36,14 @@ export class AssignmentComponent {
   constructor(private assignmentService: AssignmentService,
     private projectService: ProjectService,
     private userService: UserService,
+    private authService: AuthService,
     private formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
     this.loadAssignmentList();
     this.getCurrentProject();
     this.loadUserList();
+    this.currentUserRoleName = this.authService.getUserRoleName();
     this.assignmentForm = this.formBuilder.group({
       'id': [null],
       'name': ['', [Validators.required, Validators.maxLength(100)]],
@@ -54,14 +58,9 @@ export class AssignmentComponent {
   }
 
   loadAssignmentList() {
-    const combinedAssignments$ = combineLatest(
-      this.assignmentService.getAll(),
-      this.projectService.getAll(),
+    combineLatest(this.assignmentService.getAll(), this.projectService.getAll(),
       this.userService.getAll(),
       (assignments, projects, users) => {
-        assignments = this.transformToArray(assignments);
-        projects = this.transformToArray(projects);
-        users = this.transformToArray(users);
         return assignments.map(assignment => {
           assignment.project = projects.find(project => project.id === assignment.projectId);
           assignment.assignee = users.find(user => user.id === assignment.assigneeId);
@@ -76,7 +75,9 @@ export class AssignmentComponent {
   getCurrentProject() {
     this.projectService.getAll().subscribe(result => {
       this.currentUserProject = result.pop();
-      this.assignmentForm.patchValue({ projectId: this.currentUserProject.name });
+      if (this.currentUserProject != undefined) {
+        this.assignmentForm.patchValue({ projectId: this.currentUserProject.name });
+      }
     });
   }
 
@@ -95,7 +96,7 @@ export class AssignmentComponent {
   }
 
   onEditButtonClicked(selectedAssignment: Assignment) {
-    var deadlineDate = new Date(selectedAssignment.deadline.toString());
+    let deadlineDate = new Date(selectedAssignment.deadline.toString());
     this.createModal.show();
     this.assignmentForm.setValue({
       id: selectedAssignment.id,
@@ -124,7 +125,7 @@ export class AssignmentComponent {
           this.createModal.hide();
         },
         submitError => {
-          this.errorMessage = submitError.error.message;
+          this.errorMessage = submitError.error;
         }
       );
     }
@@ -136,7 +137,7 @@ export class AssignmentComponent {
           this.createModal.hide();
         },
         submitError => {
-          this.errorMessage = submitError.error.message;
+          this.errorMessage = submitError.error;
         }
       );
     }
@@ -160,7 +161,7 @@ export class AssignmentComponent {
   }
 
   getUserIdByName(userName: string): string {
-    var result: string;
+    let result: string;
     this.userList.forEach(element => {
       if (this.getUserFullName(element) === userName) {
         result = element.id;
@@ -171,16 +172,5 @@ export class AssignmentComponent {
 
   getUserFullName(user: UserProfile): string {
     return user.firstName + ' ' + user.lastName;
-  }
-
-  transformToArray(value) {
-    if (value instanceof Array) {
-      return value;
-    }
-    else {
-      var array = [];
-      array.push(value);
-      return array;
-    }
   }
 }

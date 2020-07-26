@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DAL.Repositories
 {
     /// <summary>
-    /// Repository pattern implementation that allows to perform CRUD operations and select Assignment records.
+    /// Repository pattern implementation that allows to perform CRUD operations and query Assignment records.
     /// </summary>
     internal class AssignmentRepository : IAssignmentRepository
     {
@@ -65,7 +65,8 @@ namespace DAL.Repositories
         {
             return await _dbSet
                 .AsNoTracking()
-                .OrderBy(x => x.CompletionPercent)
+                .OrderByDescending(x => x.Priority)
+                .ThenByDescending(x => x.CompletionPercent)
                 .ToListAsync();
         }
     }
