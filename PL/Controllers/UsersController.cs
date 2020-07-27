@@ -68,7 +68,7 @@ namespace PL.Controllers
 
         [HttpGet("roles")]
         [Authorize(Roles = "Manager,Administrator")]
-        public async Task<ActionResult> GetAllRoleNames()
+        public async Task<ActionResult> GetAllRoleNamesAsync()
         {
             return Ok(await _userService.GetAllRoleNamesAsync());
         }
@@ -81,7 +81,7 @@ namespace PL.Controllers
         /// <returns>HTTP status code 204 if operation is successful, error response otherwise.</returns>
         [HttpPut("{userId}/role")]
         [Authorize(Roles = "Manager,Administrator")]
-        public async Task<ActionResult> SetUserRole(Guid userId, [FromBody] object jsonRole)
+        public async Task<ActionResult> SetUserRoleAsync(Guid userId, [FromBody] object jsonRole)
         {
             var roleDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonRole.ToString());
             var result = await _userService.SetUserRoleAsync(userId, roleDictionary["role"]);
@@ -96,7 +96,7 @@ namespace PL.Controllers
         [HttpPut("{userId}/project/{projectId}")]
         public async Task<ActionResult> AddUserToProjectAsync(Guid userId, Guid projectId)
         {
-            var result = await _userService.AddUserToProject(userId, projectId);
+            var result = await _userService.AddUserToProjectAsync(userId, projectId);
             if (!result)
             {
                 return BadRequest("Could not add user to project with provided ID.");
@@ -108,7 +108,7 @@ namespace PL.Controllers
         [HttpDelete("{userId}/project")]
         public async Task<ActionResult> RemoveUserFromProjectAsync(Guid userId)
         {
-            var result = await _userService.RemoveUserFromProject(userId);
+            var result = await _userService.RemoveUserFromProjectAsync(userId);
             if (!result)
             {
                 return BadRequest("Could not find user with provided IDs.");

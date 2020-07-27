@@ -184,7 +184,7 @@ namespace PL.Tests
             // Arrange
             var userId = Guid.NewGuid();
             var projectId = Guid.NewGuid();
-            _stubUserService.Setup(x => x.AddUserToProject(userId, projectId))
+            _stubUserService.Setup(x => x.AddUserToProjectAsync(userId, projectId))
                 .ReturnsAsync(true);
 
             // Act
@@ -198,7 +198,7 @@ namespace PL.Tests
         public async Task AddUserToProjectAsync_ReturnsBadRequestResponse_WhenPassedInvlidValues()
         {
             // Arrange
-            _stubUserService.Setup(x => x.AddUserToProject(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            _stubUserService.Setup(x => x.AddUserToProjectAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .ReturnsAsync(false);
 
             // Act
@@ -213,7 +213,7 @@ namespace PL.Tests
         {
             // Arrange
             var userId = Guid.NewGuid();
-            _stubUserService.Setup(x => x.RemoveUserFromProject(userId))
+            _stubUserService.Setup(x => x.RemoveUserFromProjectAsync(userId))
                 .ReturnsAsync(true);
 
             // Act
@@ -227,7 +227,7 @@ namespace PL.Tests
         public async Task RemoveUserFromProjectAsync_ReturnsBadRequestResponse_WhenPassedInvalidValue()
         {
             // Arrange
-            _stubUserService.Setup(x => x.RemoveUserFromProject(It.IsAny<Guid>()))
+            _stubUserService.Setup(x => x.RemoveUserFromProjectAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(false);
 
             // Act

@@ -11,8 +11,8 @@ namespace BLL.Interfaces
         Task<bool> UpdateUserAsync(UserProfileDto userProfile);
         Task<UserProfileDto> GetUserByIdAsync(Guid userProfileId);
         Task<IEnumerable<UserProfileDto>> GetAllUsersAsync();
-        Task<bool> AddUserToProject(Guid userId, Guid projectId);
-        Task<bool> RemoveUserFromProject(Guid userId);
+        Task<bool> AddUserToProjectAsync(Guid userId, Guid projectId);
+        Task<bool> RemoveUserFromProjectAsync(Guid userId);
         Task<bool> SetUserRoleAsync(Guid userId, string role);
         Task<List<string>> GetAllRoleNamesAsync();
     }

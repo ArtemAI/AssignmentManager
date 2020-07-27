@@ -85,7 +85,7 @@ namespace BLL.Services
         /// <param name="userId">User identifier in the form of a GUID string.</param>
         /// <param name="projectId">Project identifier in the form of a GUID string.</param>
         /// <returns>True if operation is successful, false otherwise.</returns>
-        public async Task<bool> AddUserToProject(Guid userId, Guid projectId)
+        public async Task<bool> AddUserToProjectAsync(Guid userId, Guid projectId)
         {
             UserProfile userToUpdate = await _unitOfWork.UserProfiles.GetUserProfileByIdAsync(userId);
             if (userToUpdate == null)
@@ -125,7 +125,7 @@ namespace BLL.Services
         /// </summary>
         /// <param name="userId">User identifier in the form of a GUID string.</param>
         /// <returns>True if operation is successful, false otherwise.</returns>
-        public async Task<bool> RemoveUserFromProject(Guid userId)
+        public async Task<bool> RemoveUserFromProjectAsync(Guid userId)
         {
             UserProfile userToUpdate = await _unitOfWork.UserProfiles.GetUserProfileByIdAsync(userId);
             if(userToUpdate == null)
