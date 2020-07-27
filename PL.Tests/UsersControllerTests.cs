@@ -155,7 +155,7 @@ namespace PL.Tests
                 .ReturnsAsync(true);
 
             // Act
-            var actionResult = await _usersController.SetUserRole(userId, roleObject);
+            var actionResult = await _usersController.SetUserRoleAsync(userId, roleObject);
 
             // Assert
             Assert.IsInstanceOf(typeof(NoContentResult), actionResult);
@@ -172,7 +172,7 @@ namespace PL.Tests
                 .ReturnsAsync(false);
 
             // Act
-            var actionResult = await _usersController.SetUserRole(Guid.NewGuid(), roleObject);
+            var actionResult = await _usersController.SetUserRoleAsync(Guid.NewGuid(), roleObject);
 
             // Assert
             Assert.IsInstanceOf(typeof(BadRequestObjectResult), actionResult);
